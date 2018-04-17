@@ -27,7 +27,7 @@ Remember that we cannot protect the things we don’t know, and AWStealth will h
 -	**AWStrace**:  
 **Analyzes AWS CloudTrail Logs - the module provides new valuable insights from CloudTrail logs.**  
 It especially prioritizes risky sensitive IAM actions that potential attackers might use as part of their malicious actions as AWS Shadow Admins.  
-The module analyzes the log files and produces informative csv result file with important details on each executed action in the evaluated environment.   
+The module analyzes the log files and produces informative csv result file with important details on each executed action in the evaluated environment.  
 Security teams can use the results files to investigate sensitive actions, discover the entities that took those actions and reveal additional valuable details on each executed and logged action.  
   
 # Quick Start  
