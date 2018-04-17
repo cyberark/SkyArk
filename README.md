@@ -4,7 +4,7 @@ SkyArk is a cloud security project with two helpful sub-modules - AWStealth and 
 # The Main Goal:
 To help the cloud community in the effort of making cloud environments more secure.  
 SkyArk currently focuses on mitigating the new threat of Cloud Shadow Admins, and helps organizations to discover, validate and protect cloud privileged entities.  
-Stealthy and undercover cloud admins may reside in every public cloud platform and the tool at this time helps mitigating the risk in AWS.
+Stealthy and undercover cloud admins may reside in every public cloud platform and the tool at this time helps mitigating the risk in AWS.  
 
 Share your thoughts and feedback:  
 Asaf Hecht ([@Hechtov](https://twitter.com/Hechtov)) and CyberArk Labs
