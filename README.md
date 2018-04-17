@@ -1,4 +1,4 @@
-# SkyArk
+![alt text](https://github.com/Hechtov/Photos/blob/master/SkyArk/SkyArkLogo2.png "SkyArk")  
 SkyArk is a cloud security project with two helpful sub-modules - AWStealth and AWStrace.
 
 # The Main Goal:
