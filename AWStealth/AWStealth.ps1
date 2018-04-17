@@ -65,6 +65,7 @@ catch {
     try {
         Write-Host "[+] Trying to import the AWS PowerShell module"
         Import-Module "AWSPowerShell"
+        $testAWSModule = Get-AWSPowerShellVersion
     }
     catch {
         Write-Host "The AWS's PowerShell module is not available on your machine - the tool can install it for you:" -ForegroundColor Yellow
