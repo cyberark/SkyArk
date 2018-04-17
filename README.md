@@ -44,10 +44,15 @@ Each of the modules has more technical explanations in their dedicated readme fi
 **Perform AWStealth scan:**
 ```
 2. Scan-AWShadowAdmins -accesskeyid [AccessKeyID] -secretkey [SecretAccessKey] -defaultregion [AWS-region]
+Example:
+Scan-AWShadowAdmins -accesskeyid AKIAIKYBE12345HDS -secretkey pdcWZR6Mdsffsdf9ub3j/dnhxRh1d -defaultregion us-east-1
 ```
 **Perform AWStrace analysis:**
 ```
 3. Download-CloudTrailLogFiles -AccessKeyID [AccessKeyID]  -SecretKey [SecretAccessKey] -DefaultRegion [AWS-region] -TrailBucketName [CloutTrail-S3bucket] -BucketKeyPrefix [A-Folder-Prefix-To-The-Trail's-Logs]
+Example:
+Download-CloudTrailLogFiles -AccessKeyID AKIAIKYBE12345HDS -SecretKey pdcWZR6Mdsffsdf9ub3j/dnhxRh1d -DefaultRegion "us-east-1" -TrailBucketName "cloudtrail-bucketname" -BucketKeyPrefix "AWSLogs/412345678910/CloudTrail/us-east-1/2018/03/08"
+
 4. Analyze-CloudTrailLogFiles
 ```
   
