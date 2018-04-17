@@ -16,12 +16,12 @@ Furthermore, attackers can easily use those tricky specific permissions to hide 
 
 # Tool Description
 SkyArk currently contains two modules:
--	AWSteatlh:  
+-	**AWSteatlh**:  
 Discovers the most privileged entities in the scanned AWS environments - including AWS Shadow Admins.  
 With the AWStealth’s scanning results - organizations will know what users, groups and roles have sensitive and risky permissions.  
 Potential attackers are hunting those kind of entities. The defensive teams must make sure these privileged entities are well secured - have strong, rotated and safety stored credentials, have MFA enabled, are monitored carefully and so on.  
 Remember that we cannot protect the things we don’t know, and AWStealth will help to discover the most privileged entities - the straight-forward admins and the unique stealthy shadow entities that could also easily escalate privileges and become full admins.
--	AWStrace:  
+-	**AWStrace**:  
 Analyzes AWS CloudTrail Logs - the module provides new valuable insights from CloudTrail logs.  
 It especially prioritizes risky sensitive IAM actions that potential attackers might use as part of their malicious actions as AWS Shadow Admins.  
 The module analyzes the log files and produces informative csv result file with important details on each executed action in the evaluated environment.  
