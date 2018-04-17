@@ -57,7 +57,6 @@ Or Read-Only permissions over the IAM:
     "Version": "2012-10-17",
     "Statement": [
         {
-            "Sid": "VisualEditor0",
             "Effect": "Allow",
             "Action": [
                 "iam:Get*",
