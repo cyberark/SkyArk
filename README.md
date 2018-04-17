@@ -49,8 +49,8 @@ Perform AWStrace analysis:
   
 # Permissions for SkyArk - ReadOnly
 
-Permissions policy for AWStealth:
-The built in "SecurityAudit" Job function.
+Permissions policy for AWStealth:  
+The built in "SecurityAudit" Job function.  
 Or Read-Only permissions over the IAM:
 ```
 {
@@ -69,7 +69,7 @@ Or Read-Only permissions over the IAM:
 }
 ```
   
-Permissions policy for AWStrace:
+Permissions policy for AWStrace:  
 Read-Only for the CloudTrail's S3 bucket - to download and analyze the log files
 ```
 {
@@ -88,7 +88,7 @@ Read-Only for the CloudTrail's S3 bucket - to download and analyze the log files
                 "s3:ListBucket",
                 "s3:GetBucketLocation"
             ],
-            "Resource": "arn:aws:s3:::cloudtrail-bucket123"
+            "Resource": "arn:aws:s3:::cloudtrail-bucketname"
         },
         {
             "Effect": "Allow",
@@ -97,7 +97,7 @@ Read-Only for the CloudTrail's S3 bucket - to download and analyze the log files
                 "s3:List*",
                 "s3:Copy*"
             ],
-            "Resource": "arn:aws:s3:::cloudtrail-bucket123/*"
+            "Resource": "arn:aws:s3:::cloudtrail-bucketname/*"
         }
     ]
 }
