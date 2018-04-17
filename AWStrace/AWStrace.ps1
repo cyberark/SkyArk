@@ -62,6 +62,7 @@ catch {
     try {
         Write-Host "[+] Trying to import the AWS PowerShell module"
         Import-Module "AWSPowerShell"
+	$testAWSModule = Get-AWSPowerShellVersion
     }
     catch {
         Write-Host "The AWS's PowerShell module is not available on your machine - the tool can install it for you:" -ForegroundColor Yellow
@@ -373,7 +374,7 @@ function Analyze-CloudTrailLogFiles {
                             foreach ($char in $actionArray) {
                                 $charCounter += 1
                                 if ($charCounter -gt 1) {
-                                    if ($char -cmatch “[A-Z]”){
+                                    if ($char -cmatch Â“[A-Z]Â”){
                                         $indexUpperCaseChar = $charCounter
                                         break
                                     }
