@@ -46,3 +46,59 @@ Perform AWStrace analysis:
 3. Download-CloudTrailLogFiles -AccessKeyID [AccessKeyID]  -SecretKey [SecretAccessKey] -DefaultRegion [AWS-region] -TrailBucketName [CloutTrail-S3bucket] -BucketKeyPrefix [A-Folder-Prefix-To-The-Trail's-Logs]
 4. Analyze-CloudTrailLogFiles
 ```
+  
+# Permissions for SkyArk - ReadOnly
+
+Permissions policy for AWStealth:
+The built in "SecurityAudit" Job function.
+Or Read-Only permissions over the IAM:
+```
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "VisualEditor0",
+            "Effect": "Allow",
+            "Action": [
+                "iam:Get*",
+                "iam:List*"
+            ],
+            "Resource": "*"
+        }
+    ]
+}
+```
+  
+Permissions policy for AWStrace:
+Read-Only for the CloudTrail's S3 bucket - to download and analyze the log files
+```
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "s3:ListAllMyBuckets"
+            ],
+            "Resource": "arn:aws:s3:::*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "s3:ListBucket",
+                "s3:GetBucketLocation"
+            ],
+            "Resource": "arn:aws:s3:::cloudtrail-bucket123"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "s3:Get*",
+                "s3:List*",
+                "s3:Copy*"
+            ],
+            "Resource": "arn:aws:s3:::cloudtrail-bucket123/*"
+        }
+    ]
+}
+```
