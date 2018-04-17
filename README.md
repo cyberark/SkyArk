@@ -1,5 +1,5 @@
 # SkyArk
-SkyArk is a cloud security project with two helpful sub-modules.
+SkyArk is a cloud security project with two helpful sub-modules - AWStealth and AWStrace.
 
 # The Main Goal:
 To help the cloud community to make their cloud environments more secure.  
