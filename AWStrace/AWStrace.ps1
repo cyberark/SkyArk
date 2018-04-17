@@ -262,7 +262,7 @@ function Unzip-CloudTrailFiles {
     $localPathZipped = $LocalPath + "\ZippedLogs"
     if (-not (Test-Path $localPathZipped)){
         Write-Warning "Please check again the logs folder, and choose the `"LocalPath`" to be the folder that contains `"ZippedLogs`" folder. (and not the `"`"ZippedLogs`" path itself)"
-    }s
+    }
     $localPathUnzipped = $LocalPath + "\UnzippedLogs\"
     if (-not (Test-Path $localPathUnzipped)){
         New-Item -ItemType directory -Path $localPathUnzipped > $null
