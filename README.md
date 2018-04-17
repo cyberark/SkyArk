@@ -31,9 +31,10 @@ The module analyzes the log files and produces informative csv result file with 
 Security teams can use the results files to investigate sensitive actions, discover the entities that took those actions and reveal additional valuable details on each executed and logged action.  
   
 # Quick Start  
-SkyArk runs in PowerShell - and uses the free **AWS's PowerShell Module**, make sure you downloaded previously the "AWS Tools for Windows PowerShell":  
+SkyArk runs in PowerShell - and uses the free **AWS's PowerShell Module**, you can download "AWS Tools for Windows PowerShell" in advance:  
 https://aws.amazon.com/powershell/  
 [Direct download link](http://sdk-for-net.amazonwebservices.com/latest/AWSToolsAndSDKForNet.msi)  
+The tool could also prompt you and automatically install the AWS PowerShell module for you.
   
 Open PowerShell in SkyArk folder with running scripts permission:  
 "powershell -ExecutionPolicy Bypass -NoProfile"
