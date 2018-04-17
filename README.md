@@ -35,14 +35,14 @@ Each of the modules has more technical explanations in their dedicated readme fi
  
 Start and import SkyArk:
 ```
-*	1. Import-Module .\SkyArk.ps1 -force
+1. Import-Module .\SkyArk.ps1 -force
 ```
 Perform AWStealth scan:
 ```
-*	2. Scan-AWShadowAdmins -accesskeyid [AccessKeyID] -secretkey [SecretAccessKey] -defaultregion [AWS-region]
+2. Scan-AWShadowAdmins -accesskeyid [AccessKeyID] -secretkey [SecretAccessKey] -defaultregion [AWS-region]
 ```
 Perform AWStrace analysis:
 ```
-*	3. Download-CloudTrailLogFiles -AccessKeyID [AccessKeyID]  -SecretKey [SecretAccessKey] -DefaultRegion [AWS-region] -TrailBucketName [CloutTrail-S3bucket] -BucketKeyPrefix [A-Folder-Prefix-To-The-Trail's-Logs]  
-* 4. Analyze-CloudTrailLogFiles
+3. Download-CloudTrailLogFiles -AccessKeyID [AccessKeyID]  -SecretKey [SecretAccessKey] -DefaultRegion [AWS-region] -TrailBucketName [CloutTrail-S3bucket] -BucketKeyPrefix [A-Folder-Prefix-To-The-Trail's-Logs]
+4. Analyze-CloudTrailLogFiles
 ```
