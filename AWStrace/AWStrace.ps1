@@ -374,7 +374,7 @@ function Analyze-CloudTrailLogFiles {
                             foreach ($char in $actionArray) {
                                 $charCounter += 1
                                 if ($charCounter -gt 1) {
-                                    if ($char -cmatch [A-Z]){
+                                    if ($char -cmatch "[A-Z]"){
                                         $indexUpperCaseChar = $charCounter
                                         break
                                     }
