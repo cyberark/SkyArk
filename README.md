@@ -35,7 +35,8 @@ SkyArk runs in PowerShell - and uses the free **AWS's PowerShell Module**, make 
 https://aws.amazon.com/powershell/  
 [Direct download link](http://sdk-for-net.amazonwebservices.com/latest/AWSToolsAndSDKForNet.msi)  
   
-Each of the modules has more technical explanations in their dedicated readme files - those files reside inside their module’s sub-folder.
+Open PowerShell in SkyArk folder with running scripts permission:  
+"powershell -ExecutionPolicy Bypass -NoProfile"
   
 **Start and import SkyArk:**
 ```
