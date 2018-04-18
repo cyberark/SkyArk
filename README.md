@@ -5,6 +5,7 @@ SkyArk is a cloud security project with two helpful sub-modules - AWStealth and 
 To help the cloud community in the effort of making cloud environments more secure.  
 SkyArk currently focuses on mitigating the new threat of Cloud Shadow Admins, and helps organizations to discover, validate and protect cloud privileged entities.  
 Stealthy and undercover cloud admins may reside in every public cloud platform and the tool at this time helps mitigating the risk in AWS.  
+**In defensive/pentest/risk assessment procedures - make sure to address the threat and validate that those privileged entites are indeed well secured**  
 
 Share your thoughts and feedback:  
 Asaf Hecht ([@Hechtov](https://twitter.com/Hechtov)) and CyberArk Labs
@@ -23,8 +24,8 @@ SkyArk currently contains two modules:
 **Discovers the most privileged entities in the scanned AWS environments - including AWS Shadow Admins.**  
 With the AWStealth’s scanning results - organizations will know what users, groups and roles have sensitive and risky permissions.  
 We also encourage organizations to scan their environments from time to time and search for suspicious deviations in their privileged entities list.  
-**Potential attackers are hunting those kind of entities. The defensive teams must make sure these privileged entities are well secured - have strong, rotated and safety stored credentials, have MFA enabled and monitored carefully.**  
-Remember that we cannot protect the things we don’t know, and AWStealth will help to discover the most privileged entities - the straight-forward admins and the unique stealthy shadow entities that could also easily escalate privileges and become full admins.
+**Potential attackers are hunting those kind of entities. The defensive teams must make sure these privileged entities are well secured - have strong, rotated and safety stored credentials, have MFA enabled and monitored carefully.**   
+Remember that we cannot protect the things we don’t know, and AWStealth will help to discover the most privileged entities - the straight-forward admins and the unique stealthy shadow entities that could also easily escalate privileges and become full admins.  
 -	**AWStrace**:  
 **Analyzes AWS CloudTrail Logs - the module provides new valuable insights from CloudTrail logs.**  
 It especially prioritizes risky sensitive IAM actions that potential attackers might use as part of their malicious actions as AWS Shadow Admins.  
