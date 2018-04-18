@@ -1,4 +1,4 @@
-# AWStealth
+![alt text](https://github.com/Hechtov/Photos/blob/master/SkyArk/AWStealthLogo.png "AWStealth")
 **Discovers the most privileged entities in the scanned AWS environments - including AWS Shadow Admins.**  
 With the AWStealth’s scanning results - organizations will know what users, groups and roles have sensitive and risky permissions.  
 Potential attackers are hunting those kind of entities. The defensive teams must make sure these privileged entities are well secured - have strong, rotated and safety stored credentials, have MFA enabled, are monitored carefully and so on.  
@@ -13,7 +13,7 @@ The tool could also prompt you and automatically install the AWS PowerShell modu
 Open PowerShell in SkyArk folder with running scripts permission:  
 "powershell -ExecutionPolicy Bypass -NoProfile"
   
-**Start and import AWStealth:**
+**If you want to use only AWStealth from SkyArk tool:**
 ```
 1. Import-Module .\AWStealth.ps1 -force
 ```
