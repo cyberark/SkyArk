@@ -1,4 +1,5 @@
 ![alt text](https://github.com/Hechtov/Photos/blob/master/SkyArk/AWStealthLogo.png "AWStealth")  
+  
 **Discovers the most privileged entities in the scanned AWS environments - including AWS Shadow Admins.**  
 With the AWStealth’s scanning results - organizations will know what users, groups and roles have sensitive and risky permissions.  
 Potential attackers are hunting those kind of entities. The defensive teams must make sure these privileged entities are well secured - have strong, rotated and safety stored credentials, have MFA enabled, are monitored carefully and so on.  
