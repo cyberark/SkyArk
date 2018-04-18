@@ -1,4 +1,5 @@
-# AWStrace
+![alt text](https://github.com/Hechtov/Photos/blob/master/SkyArk/AWStraceLogo.png "AWStrace")
+  
 **Analyzes AWS CloudTrail Logs - the module provides new valuable insights from CloudTrail logs.**  
 It especially prioritizes risky sensitive IAM actions that potential attackers might use as part of their malicious actions as AWS Shadow Admins.  
 The module analyzes the log files and produces informative csv result file with important details on each executed action in the evaluated environment.  
@@ -13,7 +14,7 @@ The tool could also prompt you and automatically install the AWS PowerShell modu
 Open PowerShell in SkyArk folder with running scripts permission:  
 "powershell -ExecutionPolicy Bypass -NoProfile"
   
-**Start and import AWStrace:**
+**If you want to use only AWStrace from SkyArk tool:**
 ```
 1. Import-Module .\AWStrace.ps1 -force
 ```
