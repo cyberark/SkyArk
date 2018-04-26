@@ -18,6 +18,9 @@ The research focuses on the new uprising threat of Cloud Shadow Admins - how att
   
 Furthermore, attackers can easily use those tricky specific permissions to hide stealthy admin entities that will wait for them as an undercover persistence technique. We started researching this threat in AWS following its great popularity and later on, we will continue to other cloud vendors as well.
 
+More details are available in the "Cloud Shadow Admins" blog post:  
+https://www.cyberark.com/threat-research-blog/cloud-shadow-admin-threat-10-permissions-protect/  
+
 # Tool Description
 SkyArk currently contains two modules:
 -	**AWSteatlh**:  
