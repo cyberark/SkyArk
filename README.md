@@ -7,6 +7,7 @@ SkyArk currently focuses on mitigating the new threat of Cloud Shadow Admins, an
 Stealthy and undercover cloud admins may reside in every public cloud platform and the tool at this time helps mitigating the risk in AWS.  
 **In defensive/pentest/risk assessment procedures - make sure to address the threat and validate that those privileged entities are indeed well secured.**  
 
+
 # Background:
 SkyArk tool is published as part of our presented research at RSA USA 2018 - on Cloud Shadow Admins:  
 https://www.rsaconference.com/videos/quick-look-sneak-your-way-to-cloud-persistenceshadow-admins-are-here-to-stay
@@ -35,7 +36,7 @@ Security teams can use the results files to investigate sensitive actions, disco
 # Quick Start  
 SkyArk runs in PowerShell - and uses the free **AWS's PowerShell Module**:  
 https://aws.amazon.com/powershell/  
-The tool will prompt you and could automatically install the AWS PowerShell module for you (require PS version 5+). Or you can download "AWS Tools for Windows PowerShell" in advance:  
+If you have PS version 5+ - the tool will prompt you and could automatically install the AWS PowerShell module for you. Otherwise, you can download "AWS Tools for Windows PowerShell" in advance:  
 [Direct download link](http://sdk-for-net.amazonwebservices.com/latest/AWSToolsAndSDKForNet.msi)  
    
 Open PowerShell in SkyArk folder with running scripts permission:  
@@ -115,5 +116,5 @@ Read-Only for the CloudTrail's S3 bucket - to download and analyze the log files
 }
 ```
 
-# Share your thoughts and feedback  
+# Share Your Thoughts And Feedback  
 Asaf Hecht ([@Hechtov](https://twitter.com/Hechtov)) and CyberArk Labs
