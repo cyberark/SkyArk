@@ -7,9 +7,6 @@ SkyArk currently focuses on mitigating the new threat of Cloud Shadow Admins, an
 Stealthy and undercover cloud admins may reside in every public cloud platform and the tool at this time helps mitigating the risk in AWS.  
 **In defensive/pentest/risk assessment procedures - make sure to address the threat and validate that those privileged entities are indeed well secured.**  
 
-Share your thoughts and feedback:  
-Asaf Hecht ([@Hechtov](https://twitter.com/Hechtov)) and CyberArk Labs
-
 # Background:
 SkyArk tool is published as part of our presented research at RSA USA 2018 - on Cloud Shadow Admins:  
 https://www.rsaconference.com/videos/quick-look-sneak-your-way-to-cloud-persistenceshadow-admins-are-here-to-stay
@@ -117,3 +114,6 @@ Read-Only for the CloudTrail's S3 bucket - to download and analyze the log files
     ]
 }
 ```
+
+# Share your thoughts and feedback  
+Asaf Hecht ([@Hechtov](https://twitter.com/Hechtov)) and CyberArk Labs
