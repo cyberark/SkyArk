@@ -63,7 +63,44 @@ Write-Output "`nCurrently it has two modules: AWStealth & AWStrace - check them 
 Write-Output "New modules to come - you are welcome to share feedback and suggest ideas`n"
 Write-Output $Author
 
+# search for AWS powerShell module
+try {
+    $AWSModule = Get-AWSPowerShellVersion
+}
+catch {
+    try {
+        Write-Host "[+] Trying to import the AWS PowerShell module"
+        Import-Module "AWSPowerShell"
+        $testAWSModule = Get-AWSPowerShellVersion
+    }
+    catch {
+        Write-Host "The AWS's PowerShell module is not available on your machine - the tool can install it for you:" -ForegroundColor Yellow
+        $PowerShellVersion = $PSVersionTable.PSVersion.Major
+        if ($PowerShellVersion -ge 5) {
+            Write-Host "Installing AWSPowerShell module for the current user..."
+            Install-Module AWSPowerShell -Scope CurrentUser -Force
+            Import-Module "AWSPowerShell"
+        }
+        else {
+            Write-Warning "You use PowerShell version $testAWSModule. PS could not automatically install the AWS module. Consider upgrade to PS version 5+ or download AWSPowerShell module from the offical site:"
+            Write-Warning "https://aws.amazon.com/powershell/"
+            Return
+        }
+    }
+    try {
+        $testAWSModule = Get-AWSPowerShellVersion
+        if ($testAWSModule) {
+            Write-Host "[+] Good, AWS PowerShell module was loaded successfully"
+        }
+    }
+    catch {
+        Write-Host "Encountered an error with AWS's PowerShell module - please make sure it's indeed installed on your machine - and try again." -ForegroundColor red
+        Write-Host "Check the official download page:`n    https://aws.amazon.com/powershell/`nOr use the direct download link:`n    http://sdk-for-net.amazonwebservices.com/latest/AWSToolsAndSDKForNet.msi" -ForegroundColor Yellow
+        Return
+    }
+}
 
+# import AWStealth and AWStrace
 Import-Module ".\AWStealth\AWStealth.ps1" -force > $null
 Write-Output "`n[+] Module AWStealth was loaded`nUse the function `"Scan-AWShadowAdmins`"`n"
 Import-Module ".\AWStrace\AWStrace.ps1" -force > $null
