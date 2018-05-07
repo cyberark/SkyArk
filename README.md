@@ -36,7 +36,7 @@ Security teams can use the results files to investigate sensitive actions, disco
 # Quick Start  
 SkyArk runs in PowerShell - and uses the free **AWS's PowerShell Module**:  
 https://aws.amazon.com/powershell/  
-If you have PS version 5+ - the tool will prompt you and could automatically install the AWS PowerShell module for you. Otherwise, you can download "AWS Tools for Windows PowerShell" in advance:  
+If you have PS version 5+, the tool will prompt you and could automatically install the AWS PowerShell module for you. Otherwise, you can download "AWS Tools for Windows PowerShell" in advance:  
 [Direct download link](http://sdk-for-net.amazonwebservices.com/latest/AWSToolsAndSDKForNet.msi)  
    
 Open PowerShell in SkyArk folder with running scripts permission:  
