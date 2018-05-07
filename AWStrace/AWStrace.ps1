@@ -66,9 +66,17 @@ catch {
     }
     catch {
         Write-Host "The AWS's PowerShell module is not available on your machine - the tool can install it for you:" -ForegroundColor Yellow
-        Write-Host "Installing AWSPowerShell module for the current user..."
-        Install-Module AWSPowerShell -Scope CurrentUser -Force
-        Import-Module "AWSPowerShell"
+        $PowerShellVersion = $PSVersionTable.PSVersion.Major
+        if ($PowerShellVersion -ge 5) {
+            Write-Host "Installing AWSPowerShell module for the current user..."
+            Install-Module AWSPowerShell -Scope CurrentUser -Force
+            Import-Module "AWSPowerShell"
+        }
+        else {
+            Write-Warning "You use PowerShell version $testAWSModule. PS could not automatically install the AWS module. Consider upgrade to PS version 5+ or download AWSPowerShell module from the offical site:"
+            Write-Warning "https://aws.amazon.com/powershell/"
+            Return
+        }
     }
     try {
         $testAWSModule = Get-AWSPowerShellVersion
