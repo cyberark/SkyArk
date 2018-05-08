@@ -73,7 +73,7 @@ catch {
             Import-Module "AWSPowerShell"
         }
         else {
-            Write-Warning "You use PowerShell version $testAWSModule. PS could not automatically install the AWS module. Consider upgrade to PS version 5+ or download AWSPowerShell module from the offical site:"
+            Write-Warning "You use PowerShell version $testAWSModule. PS could not automatically install the AWS module. Consider upgrade to PS version 5+ or download AWSPowerShell module from the officןal site:"
             Write-Warning "https://aws.amazon.com/powershell/"
             Return
         }
