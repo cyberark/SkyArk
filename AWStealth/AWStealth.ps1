@@ -800,7 +800,7 @@ function Scan-AWShadowAdmins {
     )    
      
     $privilegedEntitiesDB = @{}
-    $resultCSVpath = $PSScriptRoot + "\AWSteatlh - Results.csv"
+    $resultCSVpath = $PSScriptRoot + "\AWStealth - Results.csv"
 
     # Load the AWS credentials
     $tempProfile = "AWStealthProfile"
