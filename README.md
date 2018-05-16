@@ -21,7 +21,7 @@ https://www.cyberark.com/threat-research-blog/cloud-shadow-admin-threat-10-permi
 
 # Tool Description
 SkyArk currently contains two modules:
--	**AWSteatlh**:  
+-	**AWStealth**:  
 **Discovers the most privileged entities in the scanned AWS environments - including AWS Shadow Admins.**  
 With the AWStealth’s scanning results - organizations will know what users, groups and roles have sensitive and risky permissions.  
 We also encourage organizations to scan their environments from time to time and search for suspicious deviations in their privileged entities list.  
