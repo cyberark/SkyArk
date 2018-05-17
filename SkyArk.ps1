@@ -49,7 +49,8 @@ $AWStealth = @"
 $Author = @"
 ------------------------------------------------------------------------- 
 
-                    Author: Asaf Hecht - @Hechtov          
+                    Author: Asaf Hecht - @Hechtov
+                            CyberArk Labs
                      Future updates via Twitter
 
 -------------------------------------------------------------------------
