@@ -123,6 +123,6 @@ More blogs on the uprising Cloud Shadow Admins threat:
   
 ThreatPost: https://threatpost.com/cloud-credentials-new-attack-surface-for-old-problem/131304/  
 TechTarget\SearchCloudSecurity: https://searchcloudsecurity.techtarget.com/news/252439753/CyberArk-warns-of-shadow-admins-in-cloud-environments  
-SecurityBoulevard: https://securityboulevard.com/2018/05/cyberark-shows-how-shadow-admins-can-be-created-in-cloud-environments/
+SecurityBoulevard: https://securityboulevard.com/2018/05/cyberark-shows-how-shadow-admins-can-be-created-in-cloud-environments/  
 LastWatchDog: https://www.lastwatchdog.com/cyberark-shows-how-shadow-admins-can-be-created-in-cloud-environments/  
 Byron Acohido's Podcast: https://soundcloud.com/byron-acohido/cloud-privileged-accounts-flaws-exposed  
