@@ -28,7 +28,7 @@ Version 1.0: RSA USA conference publication (19.4.18)
 #>
 
 
-$version = "v1.0"
+$AWStraceVersion = "v1.0"
 
 $AWStealth = @"
 ----------------------------------------------------
@@ -51,7 +51,7 @@ $Author = @"
 "@
 
 Write-Output $AWStealth
-Write-Output "***   Welcome to SkyArk's AWStrace module $version   ***`n"
+Write-Output "***   Welcome to SkyArk's AWStrace module $AWStraceVersion   ***`n"
 Write-Output "It's time to analyze your CloudTrail logs &`nDetect privileged actions that could have been triggered by potential attackers`n"
 Write-Output $Author
 
