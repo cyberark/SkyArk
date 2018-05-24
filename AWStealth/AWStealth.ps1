@@ -27,11 +27,12 @@ version 0.2: 4.3.18
 version 0.3: 8.3.18
 version 0.4: 13.3.18
 Version 1.0: RSA USA conference publication (19.4.18)
+Version 1.1: 23.5 - add the final summary report in a txt format
 
 #>
 
 
-$version = "v1.0"
+$version = "v1.1"
 
 $AWStealth = @"
 ------------------------------------------------------
@@ -47,6 +48,7 @@ $AWStealth = @"
 
 $Author = @"
           Author:  Asaf Hecht - @Hechtov
+                  CyberArk Labs
             Future updates via Twitter
 
 ------------------------------------------------------
@@ -499,6 +501,7 @@ function Check-ManagedPolicies {
     $numManagedPolicies = $managedPolicies.Count
     Write-host "[+] Scanning managed policies"
     Write-host "Discovered", $numManagedPolicies, "managed policies, analysis in progress"
+    $countEntities.add("ManagedPolicies", $numManagedPolicies)
     $managedPolicyCounter = 0
 
     # check every managed policy in the environment
@@ -611,6 +614,7 @@ function Check-InlinePolicies {
     $userCounter = 0
     $AWSusers = Get-IAMUserList
     Write-host "Analyzing" $AWSusers.count "users"
+    $countEntities.add("Users", $AWSusers.count)
     $AWSusers | foreach {
         $userCounter++
         $userName = $_.UserName
@@ -660,6 +664,7 @@ function Check-InlinePolicies {
     $groupCounter = 0
     $AWSgroups = Get-IAMGroupList
     Write-host "Analyzing" $AWSgroups.count "groups"
+    $countEntities.add("Groups", $AWSgroups.count)
     $AWSgroups | foreach {
     $groupCounter++
         $GroupName = $_.GroupName
@@ -730,6 +735,7 @@ function Check-InlinePolicies {
     $roleCounter = 0
     $AWSroles = Get-IAMRoleList
     Write-host "Analyzing" $AWSroles.count "roles"
+    $countEntities.add("Roles", $AWSroles.count)
     $AWSroles | foreach {
         $roleCounter++
         $roleName = $_.RoleName
@@ -774,12 +780,178 @@ function Check-InlinePolicies {
     }
 
     $inlinePoliciesCounter = $inlineUserPoliciesCounter + $inlineGroupPoliciesCounter + $inlineRolePoliciesCounter
+    $countEntities.add("InlinePolicies", $inlinePoliciesCounter.count)
     if ($inlinePoliciesCounter -eq 1) {
         Write-Host "[+] Finished analyzing" $inlinePoliciesCounter "inline policy"
     }
     else {
         Write-Host "[+] Finished analyzing" $inlinePoliciesCounter "inline policies"
     }
+}
+
+
+# write the final scan report - as a simple and summarized txt file
+function Write-Report {
+    [CmdletBinding()]
+    Param (
+        $privilegedEntitiesDB,
+        [string]
+        $finalReportPath,
+        [string]
+        $resultCSVpath
+    )
+
+    $reportOutputArray = New-Object System.Collections.Generic.List[System.String]
+
+    $allPrivivlgedEntities = $privilegedEntitiesDB | select "Arn" -Unique
+    $numAllPrivivlgedEntities = $allPrivivlgedEntities.count
+    $awsAccount = (([string]$allPrivivlgedEntities[0]).Split(":"))[4]
+    $shadowAdmins = $privilegedEntitiesDB | Where-Object {$_.PrivilegeType -like "*shadow*"} 
+    $numShadowAdmins = $shadowAdmins.count
+    $privilegedUsers = $privilegedEntitiesDB | Where-Object {$_.EntityType -eq "User"}
+    $numPrivilegedUsers = $privilegedUsers.count
+    $privilegedGroups = $privilegedEntitiesDB | Where-Object {$_.EntityType -eq "Group"}
+    $numPrivilegedGroups = $privilegedGroups.count
+    $privilegedRoles = $privilegedEntitiesDB | Where-Object {$_.EntityType -eq "Role"}
+    $numPivilegedRoles = $privilegedRoles.count
+    $privilegedUserNoMFA = $privilegedEntitiesDB | Where-Object {$_.MFAenable -eq "NoMFA"} 
+    $numPrivilegedUserNoMFA = $privilegedUserNoMFA.count
+    $privilegedUsersNoCondition = $privilegedEntitiesDB | Where-Object {$_.policyCondition -like "*noCon*"} 
+    $numPrivilegedUsersNoCondition = $privilegedUsersNoCondition.count
+    $privielgedUsersNotSecured = $privilegedEntitiesDB | Where-Object {($_.policyCondition -like "*noCon*") -and ($_.MFAenable -eq "NoMFA")} 
+    $numPivielgedUsersNotSecured = $privielgedUsersNotSecured.count
+    $scanTime = Get-Date -Format g
+
+    $reportOutputArray.Add("")
+    $reportOutputArray.Add("######################################################")
+    $reportOutputArray.Add($AWStealth)
+    $reportOutputArray.Add("              AWStealth version: $version")
+    $reportOutputArray.Add("")
+    $reportOutputArray.Add("       The scanned AWS Account: $awsAccount")
+    $reportOutputArray.Add("")
+    $reportOutputArray.Add("        Date of the scan: $scanTime")
+    $reportOutputArray.Add("")
+    $reportOutputArray.Add("######################################################")
+    $reportOutputArray.Add("")
+    $reportOutputArray.Add("                     SCAN SUMMARY")
+    $reportOutputArray.Add("")
+    $reportOutputArray.Add("#######################################################")
+
+    try {
+        $reportOutputArray.Add("")
+        $reportOutputArray.Add("AWStealth scanned:")
+        $number = $countEntities["Users"]
+        $reportOutputArray.Add("$number Users")
+        $number = $countEntities["Groups"]
+        $reportOutputArray.Add("$number Groups")
+        $number = $countEntities["Roles"]
+        $reportOutputArray.Add("$number Roles")
+        $number = $countEntities["ManagedPolicies"]
+        $reportOutputArray.Add("$number Managed Policies")
+        $number = $countEntities["InlinePolicies"]
+        $reportOutputArray.Add("$number Inline Policies")
+    }
+    catch {
+        Write-verbose "Couldn't calculate the entities' numbers"
+    }
+    $reportOutputArray.Add("")
+    $reportOutputArray.Add("* The AWStealth scan focuses on the highest level of the privileges in AWS.")
+    $reportOutputArray.Add("  Make sure to secure also the less-sensitive entities in the environment.")
+    $reportOutputArray.Add("")
+    $reportOutputArray.Add("Total number of the most privileged AWS entities: $numAllPrivivlgedEntities")
+    $reportOutputArray.Add("Total number of AWS Shadow Admins: $numShadowAdmins")
+    $reportOutputArray.Add("")
+    $reportOutputArray.Add("Number of privileged Users: $numPrivilegedUsers")
+    $reportOutputArray.Add("Number of privileged Groups: $numPrivilegedGroups")
+    $reportOutputArray.Add("Number of privileged Roles: $numPivilegedRoles")
+    $reportOutputArray.Add("")
+    $reportOutputArray.Add("#######################################################")
+    $reportOutputArray.Add("")
+    $reportOutputArray.Add("-> Number of privileged users without MFA protection: $numPrivilegedUserNoMFA")
+    $reportOutputArray.Add("-> Number of privileged users without constrained conditions: $numPrivilegedUserNoMFA")
+    $reportOutputArray.Add("")
+    $reportOutputArray.Add("-> Number of unsecured users = no MFA and no constrained permission condition: $numPivielgedUsersNotSecured")
+    $reportOutputArray.Add("")        
+    $reportOutputArray.Add("List of unsecured privileged users:")
+    $counter = 0
+    $privielgedUsersNotSecured | foreach {
+        $counter += 1
+        $reportOutputArray.Add([string]$counter + ". " + $_.EntityName)
+    }
+
+    $reportOutputArray.Add("")
+    $reportOutputArray.Add("######################################################")
+    $reportOutputArray.Add("")
+    $reportOutputArray.Add("Full scan results are available in the scan csv file:")
+    $reportOutputArray.Add($resultCSVpath)
+    $reportOutputArray.Add("")
+    $reportOutputArray.Add("#######################################################")
+    $reportOutputArray.Add("")
+    $reportOutputArray.Add("List of users with direct privileges:")
+    $counter = 0
+    $usersFromGroups = @()
+    $privilegedUsers | foreach {
+        $countPolicyNames = ($_.PolicyName | Where-Object {$_ -eq ','} | Measure-Object).Count
+        $countPoliciesFromGroups = ($_.PolicyName | Where-Object {$_ -like '*-Thr*'} | Measure-Object).Count
+        if (($countPolicyNames + 1) -eq $countPoliciesFromGroups) {
+            $usersFromGroups += $_.EntityName
+        }
+        else {
+            $counter += 1
+            $reportOutputArray.Add([string]$counter + ". " + $_.EntityName)
+        }
+    }
+
+    $reportOutputArray.Add("")
+    $reportOutputArray.Add("List of the privileged Groups:")
+    $counter = 0
+    $privilegedGroups | foreach {
+        $counter += 1
+        $reportOutputArray.Add([string]$counter + ". " + $_.EntityName + " - group members: " + $_.GroupMembers)
+    }
+    $reportOutputArray.Add("")
+    $reportOutputArray.Add("List of the privileged Roles:")
+    $counter = 0
+    $privilegedRoles | foreach {
+        $counter += 1
+        $reportOutputArray.Add([string]$counter + ". " + $_.EntityName)
+    }
+
+    $reportOutputArray.Add("")
+    $reportOutputArray.Add("######################################################")
+    $reportOutputArray.Add("")
+    $reportOutputArray.Add("The discoverd entites with their full privileged permission policies:")
+    $reportOutputArray.Add("")
+    $reportOutputArray.Add("#######################################################")
+    $reportOutputArray.Add("")
+
+    $counter = 0
+    $privilegedEntitiesDB | foreach {
+        if ($_.MFAenable -eq "NoMFA") {
+            $mfa = "no MFA"
+        }
+        else {
+            $mfa = "MFA is enable"
+        }
+        if ($_.policyCondition -like "*noCon*") {
+            $policyCond = "no constrained permission condition"
+        }
+        else {
+            $policyCond = "the permission has a condition"
+        }
+        $counter += 1
+        $reportOutputArray.Add([string]$counter + ". " + $_.EntityName + " - " + $mfa + ", " + $policyCond)
+        $reportOutputArray.Add("PrivilegedType: " + $_.PrivilegeType)
+        $permissionPolicy = ([string]$_.PrivilegedPermissionPolicy).Split("`n")
+        $permissionPolicy | foreach {
+            $reportOutputArray.Add($_)
+        }
+    }
+
+    $reportOutputArray.Add("")
+    $reportOutputArray.Add("#######################################################")
+
+    $reportOutputArray | Out-File $finalReportPath 
 }
 
 
@@ -800,7 +972,9 @@ function Scan-AWShadowAdmins {
     )    
      
     $privilegedEntitiesDB = @{}
+    $countEntities = @{}
     $resultCSVpath = $PSScriptRoot + "\AWStealth - Results.csv"
+    $finalReportPath = $PSScriptRoot + "\AWSteatlh - Final Report.txt"
 
     # Load the AWS credentials
     $tempProfile = "AWStealthProfile"
@@ -851,7 +1025,10 @@ function Scan-AWShadowAdmins {
     }
     else {
         $privilegedEntitiesDB.Values | sort -Descending EntityType, PrivilegeType, PolicyName | Export-Csv -path $resultCSVpath -NoTypeInformation
-        Write-host "[+] Exported the results to `"$resultCSVpath`"`n" -ForegroundColor green
+        Write-host "[+] Exported the results to: `n`"$resultCSVpath`"`n" -ForegroundColor green
+        $privilegedEntitiesDB = $privilegedEntitiesDB.Values | sort -Descending EntityType, PrivilegeType, PolicyName
+        Write-Report -privilegedEntitiesDB $privilegedEntitiesDB -finalReportPath $finalReportPath -resultCSVpath $resultCSVpath
+        Write-host "[+] Check the final report: `n`"$finalReportPath`"`n" -ForegroundColor green
     }
     
     Remove-AWSCredentialProfile -ProfileName $tempProfile -force
@@ -859,3 +1036,4 @@ function Scan-AWShadowAdmins {
 
 # Initiating global DBs
 $privilegedEntitiesDB = @{}
+$countEntities = @{}
