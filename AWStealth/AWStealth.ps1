@@ -780,7 +780,7 @@ function Check-InlinePolicies {
     }
 
     $inlinePoliciesCounter = $inlineUserPoliciesCounter + $inlineGroupPoliciesCounter + $inlineRolePoliciesCounter
-    $countEntities.add("InlinePolicies", $inlinePoliciesCounter.count)
+    $countEntities.add("InlinePolicies", $inlinePoliciesCounter)
     if ($inlinePoliciesCounter -eq 1) {
         Write-Host "[+] Finished analyzing" $inlinePoliciesCounter "inline policy"
     }
@@ -805,9 +805,16 @@ function Write-Report {
 
     $allPrivivlgedEntities = $privilegedEntitiesDB | select "Arn" -Unique
     $numAllPrivivlgedEntities = $allPrivivlgedEntities.count
+    Write-host "-> AWStealth discovered $numAllPrivivlgedEntities privileged entities" -BackgroundColor DarkRed
     $awsAccount = (([string]$allPrivivlgedEntities[0]).Split(":"))[4]
     $shadowAdmins = $privilegedEntitiesDB | Where-Object {$_.PrivilegeType -like "*shadow*"} 
     $numShadowAdmins = $shadowAdmins.count
+    if (-not $numShadowAdmins) {
+        $numShadowAdmins = 0
+    }
+    else {
+         Write-host "-> Discovered $numShadowAdmins AWS Shadow Admins" -BackgroundColor DarkRed
+    }
     $privilegedUsers = $privilegedEntitiesDB | Where-Object {$_.EntityType -eq "User"}
     $numPrivilegedUsers = $privilegedUsers.count
     $privilegedGroups = $privilegedEntitiesDB | Where-Object {$_.EntityType -eq "Group"}
@@ -871,6 +878,9 @@ function Write-Report {
     $reportOutputArray.Add("-> Number of privileged users without constrained conditions: $numPrivilegedUserNoMFA")
     $reportOutputArray.Add("")
     $reportOutputArray.Add("-> Number of unsecured users = no MFA and no constrained permission condition: $numPivielgedUsersNotSecured")
+    if ($numPivielgedUsersNotSecured -gt 1) {
+        Write-host "-> Number of unsecured users = no MFA and no constrained permission condition: $numPivielgedUsersNotSecured Users!`n" -BackgroundColor DarkRed
+    }
     $reportOutputArray.Add("")        
     $reportOutputArray.Add("List of unsecured privileged users:")
     $counter = 0
