@@ -32,7 +32,7 @@ Version 1.1: 23.5 - add the final summary report in a txt format
 #>
 
 
-$version = "v1.1"
+$AWStealthVersion = "v1.1"
 
 $AWStealth = @"
 ------------------------------------------------------
@@ -56,7 +56,7 @@ $Author = @"
 
 
 Write-Output $AWStealth
-Write-Output "***   Welcome to SkyArk's AWStealth module $version   ***`n"
+Write-Output "***   Welcome to SkyArk's AWStealth module $AWStealthVersion   ***`n"
 Write-Output "It's time to discover the most privileged AWS entities`n"
 Write-Output $Author
 
@@ -825,7 +825,7 @@ function Write-Report {
     $reportOutputArray.Add("")
     $reportOutputArray.Add("######################################################")
     $reportOutputArray.Add($AWStealth)
-    $reportOutputArray.Add("              AWStealth version: $version")
+    $reportOutputArray.Add("              AWStealth version: $AWStealthVersion")
     $reportOutputArray.Add("")
     $reportOutputArray.Add("       The scanned AWS Account: $awsAccount")
     $reportOutputArray.Add("")
