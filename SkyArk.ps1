@@ -30,7 +30,7 @@ Version 1.1 - new version for AWStealth, with new summary report in a simple txt
 #>
 
 
-$version = "v1.1"
+$SkyArkVersion = "v1.1"
 
 $AWStealth = @"
 -------------------------------------------------------------------------  
@@ -59,7 +59,7 @@ $Author = @"
 
 
 Write-Output $AWStealth
-Write-Output "`n                  ***   Welcome to SkyArk $version   ***`n"
+Write-Output "`n                  ***   Welcome to SkyArk $SkyArkVersion   ***`n"
 Write-Output "          Cool cloud security project to help you around :)`n"
 Write-Output "`nCurrently it has two modules: AWStealth & AWStrace - check them out."
 Write-Output "New modules to come - you are welcome to share feedback and suggest ideas`n"
