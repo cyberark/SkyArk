@@ -24,12 +24,13 @@ Versions Notes:
 
 Version 0.1 - 15.3.18
 Version 0.2 - 10.4.18
-Version 1.0: RSA USA conference publication (19.4.18)
+Version 1.0 - RSA USA conference publication (19.4.18)
+Version 1.1 - new version for AWStealth, with new summary report in a simple txt file 
 
 #>
 
 
-$version = "v1.0"
+$version = "v1.1"
 
 $AWStealth = @"
 -------------------------------------------------------------------------  
