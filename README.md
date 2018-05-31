@@ -39,7 +39,9 @@ https://aws.amazon.com/powershell/
 If you have PS version 5+, the tool will prompt you and could automatically install the AWS PowerShell module for you. Otherwise, you can download "AWS Tools for Windows PowerShell" in advance:  
 [Direct download link](http://sdk-for-net.amazonwebservices.com/latest/AWSToolsAndSDKForNet.msi)  
    
-Open PowerShell in SkyArk folder with running scripts permission:  
+**To run AWStealth scan** - you can just double click on the batch file **"Run-AWStealthScan.bat"** (it will automatically open the PowerShell script in the background).  
+
+Otherwise - open PowerShell in SkyArk folder with running scripts permission:  
 "powershell -ExecutionPolicy Bypass -NoProfile"
   
 **Start and import SkyArk:**
