@@ -941,7 +941,7 @@ function Write-Report {
             $mfa = "no MFA"
         }
         else {
-            $mfa = "MFA is enable"
+            $mfa = "MFA is enabled"
         }
         if ($_.policyCondition -like "*noCon*") {
             $policyCond = "no constrained permission condition"
