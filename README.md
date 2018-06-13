@@ -28,7 +28,7 @@ We also encourage organizations to scan their environments from time to time and
 **Potential attackers are hunting those kinds of entities. The defensive teams must make sure these privileged entities are well secured - have strong, rotated and safety stored credentials, have MFA enabled and monitored carefully.**   
 Remember that we cannot protect the things we don’t know, and AWStealth will help to discover the most privileged entities - the straight-forward admins and the unique stealthy shadow entities that could also easily escalate privileges and become full admins.  
   
-A demo:
+AWStealth DEMO:
 ![Demo](https://github.com/Hechtov/Photos/blob/master/SkyArk/SkyArk-shortVideo.gif)  
   
 -	**AWStrace**:  
