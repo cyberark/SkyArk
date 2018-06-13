@@ -27,6 +27,10 @@ With the AWStealth’s scanning results - organizations will know what users, gr
 We also encourage organizations to scan their environments from time to time and search for suspicious deviations in their privileged entities list.  
 **Potential attackers are hunting those kinds of entities. The defensive teams must make sure these privileged entities are well secured - have strong, rotated and safety stored credentials, have MFA enabled and monitored carefully.**   
 Remember that we cannot protect the things we don’t know, and AWStealth will help to discover the most privileged entities - the straight-forward admins and the unique stealthy shadow entities that could also easily escalate privileges and become full admins.  
+  
+A demo:
+![Demo](https://github.com/Hechtov/Photos/blob/master/SkyArk/SkyArk-shortVideo.gif)  
+  
 -	**AWStrace**:  
 **Analyzes AWS CloudTrail Logs - the module provides new valuable insights from CloudTrail logs.**  
 It especially prioritizes risky sensitive IAM actions that potential attackers might use as part of their malicious actions as AWS Shadow Admins.  
