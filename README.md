@@ -10,7 +10,7 @@ Stealthy and undercover cloud admins may reside in every public cloud platform a
 
 # Background:
 SkyArk tool is published as part of our presented research at RSA USA 2018 - on Cloud Shadow Admins:  
-https://www.rsaconference.com/videos/quick-look-sneak-your-way-to-cloud-persistenceshadow-admins-are-here-to-stay
+https://www.rsaconference.com/videos/sneak-your-way-to-cloud-persistenceshadow-admins-are-here-to-stay  
   
 The research focuses on the new uprising threat of Cloud Shadow Admins - how attackers can find and abuse non-trivial and so-called “limited” permissions to still make it through and escalate their privileges and become full cloud admins.  
   
