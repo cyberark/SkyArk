@@ -9,12 +9,12 @@ Stealthy and undercover cloud admins may reside in every public cloud platform a
 
 
 # Background:
-SkyArk tool is published as part of our presented research at RSA USA 2018 - on Cloud Shadow Admins - video is available:  
+SkyArk tool is published as part of our presented research at RSA USA 2018 - on Cloud Shadow Admins - the video is available:  
 https://www.rsaconference.com/videos/sneak-your-way-to-cloud-persistenceshadow-admins-are-here-to-stay  
   
 The research focuses on the new uprising threat of Cloud Shadow Admins - how attackers can find and abuse non-trivial and so-called “limited” permissions to still make it through and escalate their privileges and become full cloud admins.  
   
-Furthermore, attackers can easily use those tricky specific permissions to hide stealthy admin entities that will wait for them as an undercover persistence technique. We started researching this threat in AWS following its great popularity and later on, we will continue to other cloud vendors as well.
+Furthermore, attackers can easily use those tricky specific permissions to hide stealthy admin entities that will wait for them as an undercover persistence technique. We started researching this threat in AWS following its great popularity and later on, we will continue with other cloud vendors as well.
 
 More details are available in the "Cloud Shadow Admins" blog post:  
 https://www.cyberark.com/threat-research-blog/cloud-shadow-admin-threat-10-permissions-protect/  
@@ -34,7 +34,7 @@ AWStealth DEMO:
 -	**AWStrace**:  
 **Analyzes AWS CloudTrail Logs - the module provides new valuable insights from CloudTrail logs.**  
 It especially prioritizes risky sensitive IAM actions that potential attackers might use as part of their malicious actions as AWS Shadow Admins.  
-The module analyzes the log files and produces informative csv result file with important details on each executed action in the evaluated environment.  
+The module analyzes the log files and produces informative csv result file with important details on each executed action in the tested environment.  
 Security teams can use the results files to investigate sensitive actions, discover the entities that took those actions and reveal additional valuable details on each executed and logged action.  
   
 # Quick Start  
@@ -70,7 +70,7 @@ Download-CloudTrailLogFiles -AccessKeyID AKIAIKYBE12345HDS -SecretKey pdcWZR6Mds
 # Permissions for SkyArk - ReadOnly
 
 **Permissions policy for AWStealth**:  
-The built in "SecurityAudit" Job function.  
+The built-in "SecurityAudit" Job function.  
 Or Read-Only permissions over the IAM:
 ```
 {
