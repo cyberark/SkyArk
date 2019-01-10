@@ -1,9 +1,6 @@
-#                                                               #  
-#           AWSHostRecon - AWS Host Reconnaissance Tool         #
-#                                                               #
+# AWSHostRecon - AWS Host Reconnaissance Tool         
 
+Written by: Asaf Hecht (@Hechtov)               
+More Updates on Twitter                    
 
-             Written by: Asaf Hecht (@Hechtov)               
-                   More Updates on Twitter                    
-
-It's time to discover critical AWS informaiton on the target hosts.
+It's time to discover critical AWS informaiton on the target hosts!
