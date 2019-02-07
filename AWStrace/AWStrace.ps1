@@ -184,8 +184,8 @@ function Download-CloudTrailLogFiles {
         Write-Warning "The tool didn't get LocalPath to a local destination folder, it cannot download the log files.`nYou need to use `"LocalPath`" parameter"
         $LocalPath = read-host "Or - insert the `"LocalPath`" now:"
     }
-    if ($BucketKeyPrefix[-1] -ne "\" -and $BucketKeyPrefix[-1] -ne '\'){
-        $BucketKeyPrefix += "\"
+    if ($BucketKeyPrefix[-1] -ne "/" -and $BucketKeyPrefix[-1] -ne '/'){
+        $BucketKeyPrefix += "/"
     }
 
     $localPathZipped = $LocalPath + "\ZippedLogs"
