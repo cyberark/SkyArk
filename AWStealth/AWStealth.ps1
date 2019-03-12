@@ -1062,9 +1062,9 @@ function Scan-AWShadowAdmins {
         Write-host "Sorry, the scan didn't find any AWS Shadow Admin.`nPlease try again.`nCheck the prerequisites - including the credentials you are using in the scan and your internet connection" -ForegroundColor red
     }
     else {
-        $privilegedEntitiesDB.Values | sort -Descending EntityType, PrivilegeType, PolicyName | Export-Csv -path $resultCSVpath -NoTypeInformation
+        $privilegedEntitiesDB.Values | sort-object -Descending EntityType, PrivilegeType, PolicyName | Export-Csv -path $resultCSVpath -NoTypeInformation
         Write-host "[+] Exported the results to: `n`"$resultCSVpath`"`n" -ForegroundColor green
-        $privilegedEntitiesDB = $privilegedEntitiesDB.Values | sort -Descending EntityType, PrivilegeType, PolicyName
+        $privilegedEntitiesDB = $privilegedEntitiesDB.Values | sort-object -Descending EntityType, PrivilegeType, PolicyName
         Write-Report -privilegedEntitiesDB $privilegedEntitiesDB -finalReportPath $finalReportPath -resultCSVpath $resultCSVpath
         Write-host "[+] Check the final report: `n`"$finalReportPath`"`n" -ForegroundColor green
     }
