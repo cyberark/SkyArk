@@ -513,7 +513,14 @@ function Check-ManagedPolicies {
         $isPolicyPrivileged, $privilegeType, $policyCondition = Check-PrivilegedPolicy -policy $managedPolicyJson -policyName $_.PolicyName
         if ($isPolicyPrivileged) {
             # Lists all IAM users, groups, and roles that the specified managed policy is attached to
-            $policyEntities = Get-IAMEntitiesForPolicy -PolicyArn $_.Arn
+            $versionAwsPowerShellModule = (Get-Module) | Where-Object {$_.Name -eq "AWSPowerShell"} | select Version
+            # Use the new filter parameter of PolicyUsageFilter for elimnating the Permissions Boundaries from the API answer:
+            if ($updatedAwsPowerShellModule) {
+                $policyEntities = Get-IAMEntitiesForPolicy -PolicyArn $_.Arn -PolicyUsageFilter "PermissionsPolicy"
+            }
+            else {
+                $policyEntities = Get-IAMEntitiesForPolicy -PolicyArn $_.Arn
+            }
             $policyName = $_.PolicyName
             # analyze users
             $policyEntities.PolicyUsers | foreach {
@@ -1009,6 +1016,27 @@ function Scan-AWShadowAdmins {
 
     Write-host "[+] Start scanning for privileged AWS entities - including AWS Shadow Admins`n"
 
+    # check the AWS PowerShell Module version, because only from xxxx AWS annouced the concept of "Permissions Boundaries"
+    $updatedAwsPowerShellModule = $false
+    $versionAwsPowerShellModule = (Get-Module) | Where-Object {$_.Name -eq "AWSPowerShell"} | select Version
+    if ($versionAwsPowerShellModule.Version.Major -ge 3) {
+        if ($versionAwsPowerShellModule.Version.Minor -ge 3) {
+            if ($versionAwsPowerShellModule.Version.Build -ge 330) {
+                $updatedAwsPowerShellModule = $true
+            }
+        }
+    }
+    if (-not $updatedAwsPowerShellModule) {
+        Write-Host "`nThe current AWS PowerShell Module that is loaded - isn't up to date, its version: "$versionAwsPowerShellModule.Version -BackgroundColor Red
+        Write-Host "Please upgrade your AWS Powershell Module." 
+        Write-Host "If you have PowerShell v5+ -> Use the commands: `"Update-Module -Name AWSPowerShell`" and restart the PowerShell session""" 
+        Write-Host "You can also uninstall and install the updated module with:" 
+        Write-Host "`"Uninstall-Module -Name AWSPowerShell`" and `"Install-Module -Name AWSPowerShell`"" 
+        Write-Host "OR download manualy the last version from:`nhttps://aws.amazon.com/powershell/" 
+        Write-Host "`nThe AWStealth scan will continue!" -BackgroundColor DarkGreen
+        Write-Host "But there might be false-postive in the results if the entities in the envrionment have `"Permissions Boundries`"`n" -BackgroundColor DarkGreen
+    }
+    
     $totaltime = New-Object system.Diagnostics.Stopwatch  
     $totaltime.Start()
 
