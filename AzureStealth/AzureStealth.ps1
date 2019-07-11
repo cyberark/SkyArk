@@ -28,11 +28,16 @@ HOW TO INSTALL AZURE POWERSHELL MODULE:
 Guide for installing Azure AZ PowerShell Module:
 https://docs.microsoft.com/en-us/powershell/azure/install-az-ps?view=azps-1.4.0
 
+Guide for installing AzureAD PowerShell Module (you need this in addtion to the az module):
+https://docs.microsoft.com/en-us/powershell/azure/active-directory/install-adv2?view=azureadps-2.0
+
 If local admin (PowerShell command):
     Install-Module -Name Az -AllowClobber
+    Install-Module AzureAD -AllowClobber
 Else:
     Install-Module -Name Az -AllowClobber -Scope CurrentUser
-
+    Install-Module AzureAD -AllowClobber -Scope CurrentUser
+    
 ###########################################################################################
 
 HOW TO RUN AZURESTEALTH:
