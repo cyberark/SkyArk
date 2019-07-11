@@ -25,10 +25,10 @@ Version 0.4 - 11.07.19 - published as part of SkyArk project on GitHub
 
 HOW TO INSTALL AZURE POWERSHELL MODULE:
 
-Guide for installing Azure AZ PowerShell Module:
+Guide for installing Azure "AZ" PowerShell Module:
 https://docs.microsoft.com/en-us/powershell/azure/install-az-ps?view=azps-1.4.0
 
-Guide for installing AzureAD PowerShell Module (you need this in addtion to the az module):
+Guide for installing Azure "AzureAD" PowerShell Module (you need this in addtion to the az module):
 https://docs.microsoft.com/en-us/powershell/azure/active-directory/install-adv2?view=azureadps-2.0
 
 If local admin (PowerShell command):
