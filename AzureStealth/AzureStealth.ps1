@@ -167,7 +167,12 @@ function Connect-AzureEnvironment {
     
     try {
         $answer = "n"
-        $AzContext = Get-AzContext  | Where-Object {($_.Tenant) -or ($_.TenantId)}
+        $AzContext = Get-AzContext  | Where-Object {($_.
+	
+	
+	
+	
+	) -or ($_.TenantId)}
         if ($AzContext.Account) {
             Write-Host "The current Azure account context is set for:"
             Write-Host ($AzContext | select  Name, Account, Environment | Format-List | Out-String)  -NoNewline
@@ -219,7 +224,7 @@ function Connect-AzureEnvironment {
     }
     catch {
         Write-Host "Encountered an error - check again the inserted Azure Credentials" -BackgroundColor red
-        Write-Host "There was a problem when trying to access the target Azure Tanent\Subscription" -BackgroundColor Red
+        Write-Host "There was a problem when trying to access the target Azure Tenant\Subscription" -BackgroundColor Red
         Write-Host "Please try again... and use a valid Azure user" 
         Write-Host "You can also try different Azure user credentials or test the scan on a different environment"
         return $false
@@ -835,7 +840,7 @@ function Scan-AzureAdmins {
     try {
         Write-host "`n  [+] Running the scan with user: "$currentAzContext.Account
         $tenantList = Get-AzTenant
-        Write-Host "`nAvailable Tanent ID/s:`n"
+        Write-Host "`nAvailable Tenant ID/s:`n"
         Write-Host "  "($tenantList.Id | Format-Table | Out-String)
         $subscriptionList = Get-AzSubscription | select Name, Id, TenantId
         if ($subscriptionList) {
@@ -845,7 +850,7 @@ function Scan-AzureAdmins {
     }
     catch {
         Write-Host "Encountered an error - check again the inserted Azure Credentials" -BackgroundColor red
-        Write-Host "There was a problem when trying to access the target Azure Tanent\Subscription" -BackgroundColor Red
+        Write-Host "There was a problem when trying to access the target Azure Tenant\Subscription" -BackgroundColor Red
         Write-Host "Please try again.." 
         Write-Host "You can also try different Azure user credentials or test the scan on a different environment" 
         Return
@@ -856,7 +861,7 @@ function Scan-AzureAdmins {
         Enable-AzContextAutosave
     }
 
-    # Scan all the available tanent\s
+    # Scan all the available tenant\s
     $tenantList| foreach {
         Write-Host "  [+] Scanning tenant ID: "$_.Id
         Set-AzContext -Tenant $_.id > $null
