@@ -26,10 +26,10 @@ Version 0.4 - 11.07.19 - published as part of SkyArk project on GitHub
 HOW TO INSTALL AZURE POWERSHELL MODULE:
 
 Guide for installing Azure "AZ" PowerShell Module:
-https://docs.microsoft.com/en-us/powershell/azure/install-az-ps?view=azps-1.4.0
+https://docs.microsoft.com/en-us/powershell/azure/install-az-ps
 
 Guide for installing Azure "AzureAD" PowerShell Module (you need this in addtion to the az module):
-https://docs.microsoft.com/en-us/powershell/azure/active-directory/install-adv2?view=azureadps-2.0
+https://docs.microsoft.com/en-us/powershell/azure/active-directory/install-adv2
 
 If local admin (PowerShell command):
     Install-Module -Name Az -AllowClobber
@@ -97,12 +97,13 @@ Write-Output $Author
 
 # Check if the PowerShell Azure Module exists on the machine
 function Check-AzureModule {
+    $oneAzureModuleExist = $true
     # Try loading the AZ PowerShell Module
     try {
-        $azModule = Get-InstalledModule -Name Az
+        $azModule = Get-InstalledModule -Name Az -ErrorAction Stop
     }
     Catch {
-        Write-Host "Couldn't find the Azure PowerShell Module" -ForegroundColor Yellow
+        Write-Host "`nCouldn't find the Azure `"AZ`" PowerShell Module" -ForegroundColor Yellow
         Write-Host "The tool will prompt you and install it using the `"Install-Module -Name Az`" command" -ForegroundColor Yellow
         if ([bool](([System.Security.Principal.WindowsIdentity]::GetCurrent()).groups -match "S-1-5-32-544")) {
             Install-Module -Name Az -AllowClobber
@@ -112,20 +113,52 @@ function Check-AzureModule {
         }
     }
     try {
-        $azModule = Get-InstalledModule -Name Az
+        $azModule = Get-InstalledModule -Name Az -ErrorAction Stop
         if ($azModule){
-            Write-Host "`n  [+] Great, Azure PowerShell Module exists`n"   
+            Write-Host "`n  [+] Great, Azure `"AZ`" PowerShell Module exists`n"   
         }
     }
     catch {
-        Write-Host "Encountered an error - couldn't find the Azure PowerShell Module" -BackgroundColor Red
+        Write-Host "`nEncountered an error - couldn't find the Azure `"AZ`" PowerShell Module" -BackgroundColor Red
         Write-Host "Please install Azure Az PowerShell Module (requires PowerShell version 5.1+)" -BackgroundColor Red
         Write-Host "Installation guideline:" -BackgroundColor Red
         Write-Host "https://docs.microsoft.com/en-us/powershell/azure/install-az-ps" -BackgroundColor Red
-        Return $false
+        $oneAzureModuleExist = $false
+        #Return $false
     }
 
-    Return $true
+    # Try loading the AzureAD PowerShell Module
+    try {
+        $azModule = Get-InstalledModule -Name AzureAD -ErrorAction Stop
+    }
+    Catch {
+        Write-Host "`nCouldn't find the Azure `"AzureAD`" PowerShell Module" -ForegroundColor Yellow
+        Write-Host "The tool will prompt you and install it using the `"Install-Module -Name AzureAD`" command" -ForegroundColor Yellow
+        if ([bool](([System.Security.Principal.WindowsIdentity]::GetCurrent()).groups -match "S-1-5-32-544")) {
+            Install-Module -Name AzureAD -AllowClobber
+        }
+        else {
+            Install-Module -Name AzureAD -AllowClobber -Scope CurrentUser
+        }
+    }
+    try {
+        $azModule = Get-InstalledModule -Name AzureAD -ErrorAction Stop
+        if ($azModule){
+            Write-Host "  [+] Great, Azure `"AzureAD`" PowerShell Module exists`n"
+            $oneAzureModuleExist = $true  
+        }
+    }
+    catch {
+        Write-Host "`nEncountered an error - couldn't find the Azure `"AzureAD`" PowerShell Module" -BackgroundColor Red
+        Write-Host "Please install Azure Az PowerShell Module (requires PowerShell version 5.1+)" -BackgroundColor Red
+        Write-Host "Installation guideline:" -BackgroundColor Red
+        Write-Host "https://docs.microsoft.com/en-us/powershell/azure/active-directory/install-adv2" -BackgroundColor Red
+        if ($oneAzureModuleExist -eq $false) {
+            $oneAzureModuleExist = $false
+        }
+    }
+
+    Return $oneAzureModuleExist
 }
 
 
