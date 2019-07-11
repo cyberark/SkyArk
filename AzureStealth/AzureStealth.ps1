@@ -726,7 +726,9 @@ function Write-AzureStealthResults {
     )
 
     $azureAdminsResults = $privilegedAzEntitiesDict.Values | Sort-Object -Descending EntityType | Sort-Object PrivilegeType, EntityDisplayName, RoleId
-    $numberAdmins = $azureAdminsResults.count
+    $azureAdminsList = $azureAdminsResults |  select EntityDisplayName
+    $azureAdminsList = $azureAdminsList.EntityDisplayName | Sort-Object | Get-Unique
+    $numberAdmins = $azureAdminsList.count
     Write-Host "`n  [+] Discovered $numberAdmins Azure Admins! Check them out :)" -ForegroundColor Yellow
 
     if (-not $cloudShellMode) {
