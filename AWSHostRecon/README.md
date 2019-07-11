@@ -1,5 +1,7 @@
 # AWSHostRecon - AWS Host Reconnaissance Tool         
 
+**It's only a draft version. Good luck.**
+
 Written by: Asaf Hecht (@Hechtov)               
 More Updates on Twitter                    
 
