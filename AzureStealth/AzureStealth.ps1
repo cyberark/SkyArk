@@ -33,7 +33,7 @@ Else:
 ###########################################################################################
 
 Option for direct running the scan from GitHub (PowerShell command):
-    IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/Hechtov/TestRepo/master/AzureStealth.ps1')
+    IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/cyberark/SkyArk/master/AzureStealth/AzureStealth.ps1')
 
 ###########################################################################################
 
