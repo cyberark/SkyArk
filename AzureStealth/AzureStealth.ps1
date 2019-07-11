@@ -23,8 +23,11 @@ Version 0.4 - 11.07.19 - published as part of SkyArk project on GitHub
 
 ###########################################################################################
 
+HOW TO INSTALL AZURE POWERSHELL MODULE:
+
 Guide for installing Azure AZ PowerShell Module:
 https://docs.microsoft.com/en-us/powershell/azure/install-az-ps?view=azps-1.4.0
+
 If local admin (PowerShell command):
     Install-Module -Name Az -AllowClobber
 Else:
@@ -32,19 +35,24 @@ Else:
 
 ###########################################################################################
 
-Option for direct running the scan from GitHub (PowerShell command):
-    IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/cyberark/SkyArk/master/AzureStealth/AzureStealth.ps1')
-
-###########################################################################################
-
 HOW TO RUN AZURESTEALTH:
 
+First, download/sync locally the script file AzureStealth.ps1
+Go to the script folder.
 Run the following commands:
     (1) Import-Module .\AzureStealth.ps1 -Force     (load the scan)
     (2) Scan-AzureAdmins                            (start the AzureStealth scan)
 Optional:
     (-) Scan-AzureAdmins -UseCurrentCred            (if you used Azure PowerShell in the past, it uses the current cached Azure credentials)
     (-) Scan-AzureAdmins -GetPrivilegedUserPhotos   (if you want to focus only on the privileged Azure users, you can also get their photo (if they have profile photos))
+
+###########################################################################################
+
+RUN AZURESTEALTH DIRECTLY FROM GITHUB:
+
+Option for direct loading the scan from GitHub (PowerShell command):
+    (1) IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/cyberark/SkyArk/master/AzureStealth/AzureStealth.ps1')
+    (2) Scan-AzureAdmins
 
 ###########################################################################################
 #>
