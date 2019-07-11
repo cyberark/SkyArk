@@ -167,12 +167,7 @@ function Connect-AzureEnvironment {
     
     try {
         $answer = "n"
-        $AzContext = Get-AzContext  | Where-Object {($_.
-	
-	
-	
-	
-	) -or ($_.TenantId)}
+        $AzContext = Get-AzContext  | Where-Object {($_.tenant) -or ($_.TenantId)}
         if ($AzContext.Account) {
             Write-Host "The current Azure account context is set for:"
             Write-Host ($AzContext | select  Name, Account, Environment | Format-List | Out-String)  -NoNewline
