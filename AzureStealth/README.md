@@ -25,8 +25,8 @@ Else:
 ```
   
 ### How To Run AzureStealth:  
-1) download/sync locally the script file AzureStealth.ps1    
-2) Open PowerShell in the AzureStealth folder with permission to run scripts:  
+1) Download/sync locally the script file AzureStealth.ps1    
+2) Open PowerShell in the AzureStealth folder with the permission to run scripts:  
    "powershell -ExecutionPolicy Bypass -NoProfile"  
 3) Run the following commands:  
 ```
@@ -36,7 +36,7 @@ Else:
 4) Optional commands:
 ```
     (-) Scan-AzureAdmins -UseCurrentCred            (if you used Azure PowerShell in the past, it uses the current cached Azure credentials)  
-    (-) Scan-AzureAdmins -GetPrivilegedUserPhotos   (if you want to focus only on the privileged Azure users, you can also get their photo (if they have profile photos))  
+    (-) Scan-AzureAdmins -GetPrivilegedUserPhotos   (if you want to focus only on the privileged Azure users, you can also get their photos (if they have profile photos))  
 ```  
 ### Run AzyreStealth Directly From The Azure Built-In CloudShell:  
 You can load and run the scan directly from GitHub, simply use the following PowerShell commands:  
