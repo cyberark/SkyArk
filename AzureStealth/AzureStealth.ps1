@@ -19,7 +19,10 @@ Versions Notes:
 Version 0.1 - 03.03.19
 Version 0.2 - 21.03.19
 Version 0.3 - 08.07.19
-Version 0.4 - 11.07.19 - published as part of SkyArk project on GitHub
+Version 0.4 - 11.07.19
+Version 1 - 12.07.19 - published on GitHub as part of SkyArk tool:
+https://github.com/cyberark/SkyArk
+https://github.com/cyberark/SkyArk/tree/master/AzureStealth
 
 ###########################################################################################
 
@@ -62,7 +65,7 @@ Option for direct loading the scan from GitHub (PowerShell command):
 ###########################################################################################
 #>
 
-$AzureStealthVersion = "v0.4"
+$AzureStealthVersion = "v1"
 
 $AzureStealth = @"
 
