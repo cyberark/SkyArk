@@ -781,9 +781,10 @@ function Scan-AzureAdmins {
     $CloudShellMode = $false
     try {
         $cloudShellRun = Get-CloudDrive
-	if ($cloudShellRun){
-            CloudShellMode = $true
-	}
+	CloudShellMode = $true
+	#if ($cloudShellRun){
+        #    CloudShellMode = $true
+	#}
     }
     catch {
         $CloudShellMode = $false
