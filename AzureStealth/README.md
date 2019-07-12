@@ -14,8 +14,9 @@ Guide for installing Azure "AZ" PowerShell Module:
 https://docs.microsoft.com/en-us/powershell/azure/install-az-ps  
 Guide for installing Azure "AzureAD" PowerShell Module (you need this in addtion to the az module):  
 https://docs.microsoft.com/en-us/powershell/azure/active-directory/install-adv2  
+In short, for installing the modules just use the following PowerShell commands: 
 ```
-If you are local admin simply use the following PowerShell commands:  
+If you are local admin on the machine:  
       Install-Module -Name Az -AllowClobber  
       Install-Module AzureAD -AllowClobber  
 Else:  
