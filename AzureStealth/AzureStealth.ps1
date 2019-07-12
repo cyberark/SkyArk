@@ -45,20 +45,21 @@ Else:
 
 HOW TO RUN AZURESTEALTH:
 
-First, download/sync locally the script file AzureStealth.ps1
-Go to the script folder.
-Run the following commands:
+1) Download/sync locally the script file AzureStealth.ps1
+2) Open PowerShell in the AzureStealth folder with the permission to run scripts:
+   "powershell -ExecutionPolicy Bypass -NoProfile"
+3) Run the following commands
     (1) Import-Module .\AzureStealth.ps1 -Force     (load the scan)
     (2) Scan-AzureAdmins                            (start the AzureStealth scan)
-Optional:
+Optional commands:
     (-) Scan-AzureAdmins -UseCurrentCred            (if you used Azure PowerShell in the past, it uses the current cached Azure credentials)
-    (-) Scan-AzureAdmins -GetPrivilegedUserPhotos   (if you want to focus only on the privileged Azure users, you can also get their photo (if they have profile photos))
+    (-) Scan-AzureAdmins -GetPrivilegedUserPhotos   (if you want to focus only on the privileged Azure users, you can also get their photos (if they have profile photos))
 
 ###########################################################################################
 
-RUN AZURESTEALTH DIRECTLY FROM GITHUB:
+HOW TO RUN AZURESTEALTH DIRECTLY FROM AZURE'S CLOUDSHELL:
 
-Option for direct loading the scan from GitHub (PowerShell command):
+You can load and run the scan directly from GitHub, simply use the following PowerShell commands:
     (1) IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/cyberark/SkyArk/master/AzureStealth/AzureStealth.ps1')
     (2) Scan-AzureAdmins
 
