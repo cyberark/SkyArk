@@ -46,10 +46,10 @@ You can load and run the scan directly from GitHub, simply use the following Pow
 ```
   
 ### Permissions for running the AzureStealth scan:
-AzureStealth only needs Read-Only permissions over the Azure Directory and Subscriptions that you wish to scan.
-To note:
-By default, all the Azure users have read permissions over the Azure Directory (Azure Tenant) they are part of.
-You can also run the scan with users who don't have Azure Subscription permissions at all, in this case, the scan will still detect the Azure Directory's Admins, but not the Subscription's Admins that cannot be queried.
+AzureStealth only needs Read-Only permissions over the Azure Directory and Subscriptions that you wish to scan.  
+To note:  
+By default, all the Azure users have read permissions over the Azure Directory (Azure Tenant) they are part of.  
+You can also run the scan with users who don't have Azure Subscription permissions at all, in this case, the scan will still detect the Azure Directory's Admins, but not the Subscription's Admins that cannot be queried.  
   
   
 ## Share Your Thoughts And Feedback  
