@@ -7,14 +7,15 @@ Potential attackers are hunting for those users and the defensive teams must mak
 Remember that we cannot protect the things we don’t aware of, and AzureStealth will help in the complex mission of discovereing the most privileged Azure users - including the straight-forward admins and the stealthy shadow admins that could easily escalate their privileges and become full admins as well.
 
 # Quick Start to AzureStealth
-AzureStealth is PowerShell script that uses the free **Azure's PowerShell Module**, you can download in advance:  
+AzureStealth is a PowerShell script that uses the free **Azure's PowerShell Modules**, it requires PowerShell version 5.1+ (that comes by default in Windows 10 and for the other OSs there is an available update).  
+  
 ### How To Install Azure PowerShell Modules:  
 Guide for installing Azure "AZ" PowerShell Module:  
 https://docs.microsoft.com/en-us/powershell/azure/install-az-ps  
 Guide for installing Azure "AzureAD" PowerShell Module (you need this in addtion to the az module):  
 https://docs.microsoft.com/en-us/powershell/azure/active-directory/install-adv2  
 ```
-If you local admin use the following PowerShell command:  
+If you are local admin simply use the following PowerShell commands:  
       Install-Module -Name Az -AllowClobber  
       Install-Module AzureAD -AllowClobber  
 Else:  
@@ -23,21 +24,22 @@ Else:
 ```
   
 ### How To Run AzureStealth:  
-First, download/sync locally the script file AzureStealth.ps1  
-Open PowerShell with script execution enable and go to the sctipt folder.  
-Open PowerShell in the AzureStealth folder with permission to run scripts:  
-"powershell -ExecutionPolicy Bypass -NoProfile"  
+1) download/sync locally the script file AzureStealth.ps1    
+2) Open PowerShell in the AzureStealth folder with permission to run scripts:  
+   "powershell -ExecutionPolicy Bypass -NoProfile"  
+3) Run the following commands:  
 ```
-Run the following commands:  
     (1) Import-Module .\AzureStealth.ps1 -Force     (load the scan)  
     (2) Scan-AzureAdmins                            (start the AzureStealth scan)  
-Optional:  
+```
+4) Optional commands:
+```
     (-) Scan-AzureAdmins -UseCurrentCred            (if you used Azure PowerShell in the past, it uses the current cached Azure credentials)  
     (-) Scan-AzureAdmins -GetPrivilegedUserPhotos   (if you want to focus only on the privileged Azure users, you can also get their photo (if they have profile photos))  
 ```  
 ### Run AzyreStealth Directly From The Azure Built-In CloudShell:  
+You can load and run the scan directly from GitHub, simply use the following PowerShell commands:  
 ```
-You can load and run the scan directly from GitHub use(PowerShell command):  
     (1) IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/cyberark/SkyArk/master/AzureStealth/AzureStealth.ps1')  
     (2) Scan-AzureAdmins  
 ```
