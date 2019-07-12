@@ -788,6 +788,8 @@ function Scan-AzureAdmins {
     catch {
         $CloudShellMode = $false
     }
+    $AzModule = $true
+    write-host "cloudshell:$CloudShellMode"
     if (-not $CloudShellMode) {
         $AzModule = Check-AzureModule
     }
