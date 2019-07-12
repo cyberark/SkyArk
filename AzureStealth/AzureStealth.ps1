@@ -782,14 +782,13 @@ function Scan-AzureAdmins {
     try {
         $cloudShellRun = Get-CloudDrive
 	if ($cloudShellRun){
-            CloudShellMode = $true
+            $CloudShellMode = $true
 	}
     }
     catch {
         $CloudShellMode = $false
     }
     $AzModule = $true
-    #write-host "cloudshell:$CloudShellMode"
     if (-not $CloudShellMode) {
         $AzModule = Check-AzureModule
     }
