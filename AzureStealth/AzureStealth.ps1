@@ -728,10 +728,10 @@ function Write-AzureStealthResults {
 
     if (-not $cloudShellMode) {
         $resultsFolder = $PSScriptRoot + "\Results-" + $resultsTime
-		$resultsFolderExists = Test-Path -Path $resultsFolder
-		if (-not $resultsFolderExists) {
-			New-Item -ItemType directory -Path $resultsFolder > $null
-		}
+	$resultsFolderExists = Test-Path -Path $resultsFolder
+	if (-not $resultsFolderExists) {
+	    New-Item -ItemType directory -Path $resultsFolder > $null
+	}
         $mainResultsPath = $resultsFolder + "\AzureStealth-Results.csv"
         $azureAdminsResults | Export-Csv -path $mainResultsPath -NoTypeInformation
         Write-AzureReconInfo -ResultsFolder $resultsFolder
@@ -743,26 +743,25 @@ function Write-AzureStealthResults {
         $resultsForGridView | Out-GridView -Title "AzureStealth Results"
     }
     else {
-		$cloudDriveInfo = Get-CloudDrive
-		$localCloudShellPath = $cloudDriveInfo.MountPoint
+	$cloudDriveInfo = Get-CloudDrive
+	$localCloudShellPath = $cloudDriveInfo.MountPoint
         $resultsFolder = $localCloudShellPath + "/AzureStealth/Results-" + $resultsTime
         $resultsFolderExists = Test-Path -Path $resultsFolder
         if (-not $resultsFolderExists) {
-			New-Item -ItemType directory -Path $resultsFolder > $null
-		}
+	    New-Item -ItemType directory -Path $resultsFolder > $null
+	}
         $resultCSVpath = $resultsFolder + "/AzureStealthScan-Results.csv"
         $azureAdminsResults | Export-Csv -path $resultCSVpath -NoTypeInformation
-		Write-AzureReconInfo -ResultsFolder $resultsFolder -CloudShellMode
+	Write-AzureReconInfo -ResultsFolder $resultsFolder -CloudShellMode
         $resultsZipPath = $localCloudShellPath + "/AzureStealth/Results-" + $resultsTime +".zip"
         Compress-Archive -Path $resultsFolder -CompressionLevel Optimal -DestinationPath $resultsZipPath -Update
         Export-File -Path $resultsZipPath
-	    $storageName = $cloudDriveInfo.Name
-	    $fileShareName = $cloudDriveInfo.FileShareName
+	$storageName = $cloudDriveInfo.Name
+	$fileShareName = $cloudDriveInfo.FileShareName
         Write-Host "`n  [+] Completed the scan - the results zip file was created and available at:`n      $resultsZipPath`n"
-        Export-File -Path $resultsZipPath
         Write-Host "`n  [+] You can also use the Azure Portal to view the results files:"
         Write-Host "      Go to => `"The Storage Accounts' main view`" => `"$storageName`" => `"Files view`""
-	    Write-Host "      Choose the File Share: `"$fileShareName`""
+	Write-Host "      Choose the File Share: `"$fileShareName`""
         Write-Host "      In this File Share:"
         Write-Host "      Open the folders => `"AzureStealth`" and `"Results-"$resultsTime"`"`n"
     }
@@ -782,12 +781,16 @@ function Scan-AzureAdmins {
     $CloudShellMode = $false
     try {
         $cloudShellRun = Get-CloudDrive
-        $CloudShellMode = $true
+	if {$CloudShellMode){
+            CloudShellMode = $true
+	}
     }
     catch {
         $CloudShellMode = $false
     }
-    $AzModule = Check-AzureModule
+    if (-not $CloudShellMode) {
+        $AzModule = Check-AzureModule
+    }
     if ($AzModule -eq $false) {
         Return
     }
