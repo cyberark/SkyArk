@@ -38,93 +38,15 @@ Else:
     (-) Scan-AzureAdmins -UseCurrentCred            (if you used Azure PowerShell in the past, it uses the current cached Azure credentials)  
     (-) Scan-AzureAdmins -GetPrivilegedUserPhotos   (if you want to focus only on the privileged Azure users, you can also get their photos (if they have profile photos))  
 ```  
-### Run AzyreStealth Directly From The Azure Built-In CloudShell:  
+### How To Run AzureStealth Directly From The Azure Built-In CloudShell:  
 You can load and run the scan directly from GitHub, simply use the following PowerShell commands:  
 ```
     (1) IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/cyberark/SkyArk/master/AzureStealth/AzureStealth.ps1')  
     (2) Scan-AzureAdmins  
 ```
-   
-   
-https://aws.amazon.com/powershell/  
-[Direct download link](http://sdk-for-net.amazonwebservices.com/latest/AWSToolsAndSDKForNet.msi)  
-If you use PowerShell version 5 or above - The tool would prompt you and could automatically install the AWS PowerShell module for you.
   
-Open PowerShell in SkyArk folder with running scripts permission:  
-"powershell -ExecutionPolicy Bypass -NoProfile"
+### Permissions for running the AzureStealth scan - it needs Read-Only permissions over the Azure Directory and Subscription that you wish to scan
+
+# Share Your Thoughts And Feedback  
+Asaf Hecht ([@Hechtov](https://twitter.com/Hechtov)) and CyberArk Labs 
   
-**If you want to use only AWStealth from SkyArk tool:**
-```
-1. Import-Module .\AWStealth.ps1 -force
-```
-**Perform AWStealth scan:**
-```
-2. Scan-AWShadowAdmins -accesskeyid [AccessKeyID] -secretkey [SecretAccessKey] -defaultregion [AWS-region]
-Example:
-Scan-AWShadowAdmins -accesskeyid AKIAIKYBE12345HDS -secretkey pdcWZR6Mdsffsdf9ub3j/dnhxRh1d -defaultregion us-east-1
-```
-
-# Permissions for AWStealth - ReadOnly 
-The built in "SecurityAudit" Job function.  
-Or Read-Only permissions over the IAM:
-```
-{
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Effect": "Allow",
-            "Action": [
-                "iam:Get*",
-                "iam:List*"
-            ],
-            "Resource": "*"
-        }
-    ]
-}
-```
-  
-
-
-
-
-
-
-*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*##*#*#
-  
-# AzureStealth - Discover the most privileged users in Azure and secure\target them  
-  
-Written by: Asaf Hecht ([@Hechtov](https://twitter.com/Hechtov))   
-More Updates on Twitter   
-  
-*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*##*#*#
-  
-#### HOW TO INSTALL AZURE POWERSHELL MODULE:
-
-Guide for installing Azure AZ PowerShell Module:  
-https://docs.microsoft.com/en-us/powershell/azure/install-az-ps?view=azps-1.4.0
-  
-If local admin (PowerShell command):  
-    Install-Module -Name Az -AllowClobber
-Else:  
-    Install-Module -Name Az -AllowClobber -Scope CurrentUser  
-  
-*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*##*#*#
-
-#### HOW TO RUN AZURESTEALTH SCAN:
-  
-First, download/sync locally the script file AzureStealth.ps1  
-Go to the script folder.  
-Run the following commands:  
-    (1) Import-Module .\AzureStealth.ps1 -Force     (load the scan)  
-    (2) Scan-AzureAdmins                            (start the AzureStealth scan)  
-Optional:  
-    (-) Scan-AzureAdmins -UseCurrentCred            (if you used Azure PowerShell in the past, it uses the current cached Azure credentials)  
-    (-) Scan-AzureAdmins -GetPrivilegedUserPhotos   (if you want to focus only on the privileged Azure users, you can also get their photo (if they have profile photos))  
-
-
-#### RUN AZURESTEALTH DIRECTLY FROM GITHUB:
-Option for direct loading the scan from GitHub (PowerShell command):  
-    (1) IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/cyberark/SkyArk/master/AzureStealth/AzureStealth.ps1')  
-    (2) Scan-AzureAdmins  
-
-*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*#*##*#*#
