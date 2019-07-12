@@ -13,17 +13,20 @@ Guide for installing Azure "AZ" PowerShell Module:
 https://docs.microsoft.com/en-us/powershell/azure/install-az-ps  
 Guide for installing Azure "AzureAD" PowerShell Module (you need this in addtion to the az module):  
 https://docs.microsoft.com/en-us/powershell/azure/active-directory/install-adv2  
-  
+```
 If you local admin use the following PowerShell command:  
       Install-Module -Name Az -AllowClobber  
       Install-Module AzureAD -AllowClobber  
 Else:  
     Install-Module -Name Az -AllowClobber -Scope CurrentUser  
     Install-Module AzureAD -AllowClobber -Scope CurrentUser  
+```
   
 ### How To Run AzureStealth:  
 First, download/sync locally the script file AzureStealth.ps1  
-Go to the script folder.  
+Open PowerShell with script execution enable and go to the sctipt folder.  
+Open PowerShell in the AzureStealth folder with permission to run scripts:  
+"powershell -ExecutionPolicy Bypass -NoProfile"  
 ```
 Run the following commands:  
     (1) Import-Module .\AzureStealth.ps1 -Force     (load the scan)  
