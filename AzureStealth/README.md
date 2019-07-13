@@ -52,7 +52,7 @@ Guide for PowerShell in Azure CloudShell:
 https://docs.microsoft.com/en-us/azure/cloud-shell/quickstart-powershell  
 In short, here is a useful screenshot from the guide:  
   
-![alt text](https://github.com/Hechtov/Photos/blob/master/SkyArk/Azure%20CloudShell%20Guide.png?raw=true "Azure Cloud Shell")  
+![alt text](https://github.com/Hechtov/Photos/blob/master/SkyArk/Azure%20CloudShell%20Guide%20-%203.jpg?raw=true "Azure Cloud Shell")  
   
 **Using PowerShell \ CloudShell - you can load and run the scan directly from GitHub, simply use the following commands:**  
 ```
