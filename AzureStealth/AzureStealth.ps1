@@ -20,7 +20,7 @@ Version 0.1 - 03.03.19
 Version 0.2 - 21.03.19
 Version 0.3 - 08.07.19
 Version 0.4 - 11.07.19
-Version 1 - 12.07.19 - published on GitHub as part of SkyArk tool:
+Version 1.0 - 12.07.19 - published on GitHub as part of SkyArk tool:
 https://github.com/cyberark/SkyArk
 https://github.com/cyberark/SkyArk/tree/master/AzureStealth
 
@@ -66,11 +66,11 @@ You can load and run the scan directly from GitHub, simply use the following Pow
 ###########################################################################################
 #>
 
-$AzureStealthVersion = "v1"
+$AzureStealthVersion = "v1.0"
 
 $AzureStealth = @"
 
-----------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 
                                       _____ _             _ _   _     
            /\                        / ____| |           | | | | |    
@@ -82,13 +82,13 @@ $AzureStealth = @"
 "@                                   
 
 $Author = @"
-----------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 
                         Author: Asaf Hecht - @Hechtov
                                 CyberArk Labs
                          Future updates via Twitter
 
-----------------------------------------------------------------------------------
+-------------------------------------------------------------------------------
 
 "@
 
@@ -893,4 +893,10 @@ function Scan-AzureAdmins {
         Disable-AzContextAutosave
     }
     Write-Host "`n" 
+}
+
+
+# Alias function for starting the AzureStealth scan
+function Scan-AzureShadowAdmins {
+    Scan-AzureAdmins
 }
