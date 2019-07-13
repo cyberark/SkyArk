@@ -27,12 +27,13 @@ version 0.2: 4.3.18
 version 0.3: 8.3.18
 version 0.4: 13.3.18
 Version 1.0: RSA USA conference publication (19.4.18)
-Version 1.1: 23.5 - add the final summary report in a txt format
+Version 1.1: 23.5.19 - Added the final summary report in a txt format
+version 1.2: 13.7.19 - MOdified as part of SkyArk and the new AzureStealth scan
 
 #>
 
 
-$AWStealthVersion = "v1.1"
+$AWStealthVersion = "v1.2"
 
 $AWStealth = @"
 ------------------------------------------------------
@@ -1068,9 +1069,15 @@ function Scan-AWShadowAdmins {
         Write-Report -privilegedEntitiesDB $privilegedEntitiesDB -finalReportPath $finalReportPath -resultCSVpath $resultCSVpath
         Write-host "[+] Check the final report: `n`"$finalReportPath`"`n" -ForegroundColor green
     }
-    
     Remove-AWSCredentialProfile -ProfileName $tempProfile -force
 }
+
+
+# Alias function for starting the AWStealth scan
+function Scan-AWSAdmins {
+    Scan-AWShadowAdmins
+}
+
 
 # Initiating global DBs
 $privilegedEntitiesDB = @{}
