@@ -46,8 +46,8 @@ Else:
 ### How To Run AzureStealth Easily From The Azure Built-In Cloud Shell:  
 Guide for PowerShell in Azure Cloud Shell:  
 https://docs.microsoft.com/en-us/azure/cloud-shell/quickstart-powershell  
-In Short:  
-![alt text](https://github.com/Hechtov/Photos/blob/master/SkyArk/Azure%20CloudShell%20Guide%20-%202.png?raw=true "Azure Cloud Shell")  
+Screenshot from the guide:  
+![alt text](https://github.com/Hechtov/Photos/blob/master/SkyArk/Azure%20CloudShell%20Guide.png?raw=true "Azure Cloud Shell")  
 You can load and run the scan directly from GitHub, simply use the following PowerShell commands:  
 ```
     (1) IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/cyberark/SkyArk/master/AzureStealth/AzureStealth.ps1')  
