@@ -1,10 +1,11 @@
 ![alt text](https://github.com/Hechtov/Photos/blob/master/SkyArk/AzureStealth.png?raw=true "AzureStealth")  
   
 **Discover the most privileged users in the target Azure environments - including the stealthy Azure Shadow Admins.**  
-With the AzureStealth’s scanning results - blue and red teamers will discover who are the users with the most sensitive and risky permissions.  
+  
+With the AzureStealth’s scanning results - blue and red teamers can discover who are the users with the most sensitive and risky permissions.  
 Potential attackers are hunting for those users and the defensive teams must make sure these privileged users are well secured - have strong, rotated and safety stored credentials, have MFA enabled, being monitored carefully, etc.  
   
-Remember that we cannot protect the things we don’t aware of, and AzureStealth will help in the complex mission of discovereing the most privileged Azure users - including the straight-forward admins and the stealthy shadow admins that could easily escalate their privileges and become full admins as well.
+Remember that we cannot protect the things we don’t aware of, and AzureStealth helps in the complex mission of discovereing the most privileged Azure users - including the straight-forward admins and also the stealthy shadow admins that could easily escalate their privileges and become full admins as well.
   
 # Quick Start to AzureStealth
 AzureStealth is a PowerShell script that uses the free **Azure's PowerShell Modules**, it requires PowerShell version 5.1+ (that comes by default in Windows 10 and for the other OSs there is an available update).  
@@ -46,14 +47,14 @@ Else:
     (4) Scan-AzureAdmins -UseCurrentCred 
 ```
   
-### How To Run AzureStealth Easily From The Azure Built-In Cloud Shell:  
-Guide for PowerShell in Azure Cloud Shell:  
-https://docs.microsoft.com/en-us/azure/cloud-shell/quickstart-powershell
-In short, screenshot from the guide:  
+### How To Run AzureStealth Easily From The Azure Built-In CloudShell:  
+Guide for PowerShell in Azure CloudShell:  
+https://docs.microsoft.com/en-us/azure/cloud-shell/quickstart-powershell  
+In short, here is a useful screenshot from the guide:  
   
 ![alt text](https://github.com/Hechtov/Photos/blob/master/SkyArk/Azure%20CloudShell%20Guide.png?raw=true "Azure Cloud Shell")  
   
-You can load and run the scan directly from GitHub, simply use the following PowerShell commands:  
+**Using PowerShell \ CloudShell - you can load and run the scan directly from GitHub, simply use the following commands:**  
 ```
     (1) IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/cyberark/SkyArk/master/AzureStealth/AzureStealth.ps1')  
     (2) Scan-AzureAdmins  
