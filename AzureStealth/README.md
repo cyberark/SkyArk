@@ -38,12 +38,14 @@ Else:
     (-) Scan-AzureAdmins -UseCurrentCred            (if you used Azure PowerShell in the past, it uses the current cached Azure credentials)  
     (-) Scan-AzureAdmins -GetPrivilegedUserPhotos   (if you want to focus only on the privileged Azure users, you can also get their photos (if they have profile photos))  
 ```  
-### How To Run AzureStealth Directly From The Azure Built-In CloudShell:  
+### How To Run AzureStealth Directly From The Azure Built-In Cloud Shell:  
 You can load and run the scan directly from GitHub, simply use the following PowerShell commands:  
 ```
     (1) IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/cyberark/SkyArk/master/AzureStealth/AzureStealth.ps1')  
     (2) Scan-AzureAdmins  
 ```
+Guide for PowerShell in Azure Cloud Shell:  
+https://docs.microsoft.com/en-us/azure/cloud-shell/quickstart-powershell  
   
 ### Permissions for running the AzureStealth scan:
 AzureStealth only needs Read-Only permissions over the Azure Directory and Subscriptions that you wish to scan.  
