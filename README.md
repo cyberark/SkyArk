@@ -78,7 +78,7 @@ Security teams can use the results files to investigate sensitive actions, disco
   
 # Quick Start  
 Take a look at the Readme files of the scanning modules:  
-AzureStealth - [https://github.com/cyberark/SkyArk/blob/master/AzureStealth/README.md](https://github.com/cyberark/SkyArk/blob/master/AzureStealth/README.md)
+AzureStealth - [https://github.com/cyberark/SkyArk/blob/master/AzureStealth/README.md](https://github.com/cyberark/SkyArk/blob/master/AzureStealth/README.md)  
 AWStealth - [https://github.com/cyberark/SkyArk/blob/master/AWStealth/README.md](https://github.com/cyberark/SkyArk/blob/master/AWStealth/README.md)
 
 # Share Your Thoughts And Feedback  
