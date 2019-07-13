@@ -20,7 +20,7 @@ Furthermore, attackers can easily use those tricky specific permissions to hide 
 SkyArk was initially published as part of our research on the threat of AWS Shadow Admins, this research was presented at RSA USA 2018 conference.  
 The AWS Shadow Admins blog post:  
 https://www.cyberark.com/threat-research-blog/cloud-shadow-admin-threat-10-permissions-protect/  
-The talk recording from RSA:
+The recording of the RSA talk:  
 https://www.rsaconference.com/videos/sneak-your-way-to-cloud-persistenceshadow-admins-are-here-to-stay  
   
 About a year later, we added the AzureStealth scan to SkyArk for mitigating the Shadow Admins threat in Azure!  
