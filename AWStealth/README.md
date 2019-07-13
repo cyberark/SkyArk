@@ -1,10 +1,12 @@
 ![alt text](https://github.com/Hechtov/Photos/blob/master/SkyArk/AWStealthLogo.png "AWStealth")  
   
-**Discovers the most privileged entities in the scanned AWS environments - including AWS Shadow Admins.**  
-With the AWStealth’s scanning results - organizations will know what users, groups and roles have sensitive and risky permissions.  
-Potential attackers are hunting those kinds of entities. The defensive teams must make sure these privileged entities are well secured - have strong, rotated and safety stored credentials, have MFA enabled, are monitored carefully and so on.  
-Remember that we cannot protect the things we don’t know, and AWStealth will help to discover the most privileged entities - the straight-forward admins and the unique stealthy shadow entities that could also easily escalate privileges and become full admins.
-
+**Discover the most privileged entities in the target AWS environments - including the stealthy AWS Shadow Admins.**  
+  
+With the AWStealth’s scanning results - blue and red teamers can discover who are the users with the most sensitive and risky permissions.  
+Potential attackers are hunting for those users and the defensive teams must make sure these privileged users are well secured - have strong, rotated and safety stored credentials, have MFA enabled, being monitored carefully, etc.  
+  
+Remember that we cannot protect the things we don’t aware of, and AzureStealth helps in the complex mission of discovering the most privileged AWS entities - including the straight-forward admins and also the stealthy shadow admins that could easily escalate their privileges and become full admins as well.
+  
 # Quick Start to AWStealth
 SkyArk runs in PowerShell - and uses the free **AWS's PowerShell Module**, you can download "AWS Tools for Windows PowerShell" in advance:  
 https://aws.amazon.com/powershell/  
@@ -43,4 +45,7 @@ Or Read-Only permissions over the IAM:
     ]
 }
 ```
+  
+**AWStealth DEMO:**  
+![Demo](https://github.com/Hechtov/Photos/blob/master/SkyArk/SkyArk-shortVideo.gif)  
   
