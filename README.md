@@ -1,11 +1,11 @@
 
 ![alt text](https://github.com/Hechtov/Photos/blob/master/SkyArk/SkyArkLogo2.png "SkyArk")  
 
-**SkyArk is a cloud security project with two main scanning modules:**  
- 1.  **AzureStealth**  - Discover and target privileged users in Azure  
- 2.  **AWStealth**  - Discover and target privileged entities in AWS  
+### SkyArk is a cloud security project with two main scanning modules:  
+ 1.  **AzureStealth**  - Scans Azure environments   
+ 2.  **AWStealth**  - Scan AWS environments   
   
-**Those two scanning modules will discover the most privileged entities in the target AWS and Azure.**  
+### Those two scanning modules will discover the most privileged entities in the target AWS and Azure.  
 
 # The Main Goal - Discover The Most Privileged Cloud Users
 SkyArk currently focuses on mitigating the new threat of Cloud Shadow Admins, and helps organizations to discover, assess and protect cloud privileged entities.  
