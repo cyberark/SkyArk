@@ -37,7 +37,7 @@ Remember that we cannot protect the things we don’t aware of, and SkyArk helps
   
 How To Run AzureStealth
 The full details are in the AzureStealth's Readme file:
-[https://github.com/cyberark/SkyArk/blob/master/AzureStealth/README.md](https://github.com/cyberark/SkyArk/blob/master/AzureStealth/README.md)
+[https://github.com/cyberark/SkyArk/blob/master/AzureStealth/README.md](https://github.com/cyberark/SkyArk/blob/master/AzureStealth/README.md)  
 In short:
 1.  Download/sync locally the SkyArk project
 2.  Open PowerShell in the SkyArk folder with the permission to run scripts:  
@@ -54,8 +54,8 @@ In short:
   
 How To Run AWStealth
 The full details are in the AWStealth's Readme file:
-[https://github.com/cyberark/SkyArk/tree/master/AWStealth](https://github.com/cyberark/SkyArk/tree/master/AWStealth)
-In short:
+[https://github.com/cyberark/SkyArk/tree/master/AWStealth](https://github.com/cyberark/SkyArk/tree/master/AWStealth)  
+In short:  
 1.  Download/sync locally the SkyArk project
 2.  Open PowerShell in the SkyArk folder with the permission to run scripts:  
     "powershell -ExecutionPolicy Bypass -NoProfile"
@@ -66,7 +66,7 @@ In short:
 ```
  AWStealth needs only Read-Only permissions over the IAM service of the scanned AWS environment.
     
-AWStealth DEMO:
+**AWStealth DEMO:**  
 ![Demo](https://github.com/Hechtov/Photos/blob/master/SkyArk/SkyArk-shortVideo.gif)  
   
   ### 3. SkyArk includes more small sub-modules for playing around in the cloud security field
@@ -77,7 +77,7 @@ The module analyzes the log files and produces informative csv result file with 
 Security teams can use the results files to investigate sensitive actions, discover the entities that took those actions and reveal additional valuable details on each executed and logged action.  
   
 # Quick Start  
-Take a look at the scanning modules' Readme files:  
+Take a look at the Readme files of the scanning modules:  
 AzureStealth - [https://github.com/cyberark/SkyArk/blob/master/AzureStealth/README.md](https://github.com/cyberark/SkyArk/blob/master/AzureStealth/README.md)
 AWStealth - [https://github.com/cyberark/SkyArk/blob/master/AWStealth/README.md](https://github.com/cyberark/SkyArk/blob/master/AWStealth/README.md)
 
