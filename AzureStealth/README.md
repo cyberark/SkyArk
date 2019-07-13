@@ -5,7 +5,7 @@ With the AzureStealth’s scanning results - blue and red teamers will discover 
 Potential attackers are hunting for those users and the defensive teams must make sure these privileged users are well secured - have strong, rotated and safety stored credentials, have MFA enabled, being monitored carefully, etc.  
   
 Remember that we cannot protect the things we don’t aware of, and AzureStealth will help in the complex mission of discovereing the most privileged Azure users - including the straight-forward admins and the stealthy shadow admins that could easily escalate their privileges and become full admins as well.
-
+  
 # Quick Start to AzureStealth
 AzureStealth is a PowerShell script that uses the free **Azure's PowerShell Modules**, it requires PowerShell version 5.1+ (that comes by default in Windows 10 and for the other OSs there is an available update).  
   
@@ -37,15 +37,22 @@ Else:
 ```
     (-) Scan-AzureAdmins -UseCurrentCred            (if you used Azure PowerShell in the past, it uses the current cached Azure credentials)  
     (-) Scan-AzureAdmins -GetPrivilegedUserPhotos   (if you want to focus only on the privileged Azure users, you can also get their photos (if they have profile photos))  
-```  
-### How To Run AzureStealth Directly From The Azure Built-In Cloud Shell:  
+``` 
+5) If you encounter with Azure connection errors, you can manualy connect and then run the scan:
+```
+    (1) 
+```
+  
+### How To Run AzureStealth Easily From The Azure Built-In Cloud Shell:  
+Guide for PowerShell in Azure Cloud Shell:  
+https://docs.microsoft.com/en-us/azure/cloud-shell/quickstart-powershell  
+In Short:  
+![alt text](https://github.com/Hechtov/Photos/blob/master/SkyArk/Azure%20CloudShell%20Guide%20-%202.png?raw=true "Azure Cloud Shell")  
 You can load and run the scan directly from GitHub, simply use the following PowerShell commands:  
 ```
     (1) IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/cyberark/SkyArk/master/AzureStealth/AzureStealth.ps1')  
     (2) Scan-AzureAdmins  
 ```
-Guide for PowerShell in Azure Cloud Shell:  
-https://docs.microsoft.com/en-us/azure/cloud-shell/quickstart-powershell  
   
 ### Permissions for running the AzureStealth scan:
 AzureStealth only needs Read-Only permissions over the Azure Directory and Subscriptions that you wish to scan.  
