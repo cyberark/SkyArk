@@ -44,7 +44,7 @@ In short:
     "powershell -ExecutionPolicy Bypass -NoProfile"
 3.  Run the following commands:
 ```
-(1) Import-Module .\SkyArk,ps1 -force
+(1) Import-Module .\SkyArk.ps1 -force
 (2) Start-AzureStealth
 ```
  AzureStealth needs only Read-Only permissions over the scanned Azure Directory (Tenant) and Subscription.
@@ -61,7 +61,7 @@ In short:
     "powershell -ExecutionPolicy Bypass -NoProfile"
 3.  Run the following commands:
 ```
-(1) Import-Module .\SkyArk,ps1 -force
+(1) Import-Module .\SkyArk.ps1 -force
 (2) Start-AWStealth
 ```
  AWStealth needs only Read-Only permissions over the IAM service of the scanned AWS environment.
