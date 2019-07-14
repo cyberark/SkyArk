@@ -35,7 +35,7 @@ Remember that we cannot protect the things we don’t aware of, and SkyArk helps
 ### 1. AzureStealth Scan
 **Discover the most privileged users in the scanned Azure environment - including the Azure Shadow Admins.**
   
-How To Run AzureStealth  
+**How To Run AzureStealth**  
 The full details are in the AzureStealth's Readme file:
 [https://github.com/cyberark/SkyArk/blob/master/AzureStealth/README.md](https://github.com/cyberark/SkyArk/blob/master/AzureStealth/README.md)  
 In short:
@@ -48,12 +48,12 @@ In short:
 (2) Start-AzureStealth
 ```
  AzureStealth needs only Read-Only permissions over the scanned Azure Directory (Tenant) and Subscription.  
- *You can also run the scan easily from the Azure Portal by using the built-in CloudShell.  
+ * You can also run the scan easily from the Azure Portal by using the built-in CloudShell.  
    
   ### 2. AWStealth Scan
 **Discover the most privileged entities in the scanned AWS environment - including the Azure Shadow Admins.**
   
-How To Run AWStealth  
+**How To Run AWStealth**  
 The full details are in the AWStealth's Readme file:
 [https://github.com/cyberark/SkyArk/tree/master/AWStealth](https://github.com/cyberark/SkyArk/tree/master/AWStealth)  
 In short:  
