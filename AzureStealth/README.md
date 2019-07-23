@@ -7,6 +7,10 @@ Potential attackers are hunting for those users and the defensive teams must mak
   
 Remember that we cannot protect the things we don’t aware of, and AzureStealth helps in the complex mission of discovering the most privileged Azure users - including the straight-forward admins and also the stealthy shadow admins that could easily escalate their privileges and become full admins as well.
   
+### AzureStealth DEMO: 
+  
+![Demo](https://github.com/Hechtov/Photos/blob/master/SkyArk/AzureStealth%20-%20short%20demo1.gif?raw=true)  
+  
 # Quick Start to AzureStealth
 AzureStealth is a PowerShell script that uses the free **Azure's PowerShell Modules**, it requires PowerShell version 5.1+ (that comes by default in Windows 10 and for the other OSs there is an available update).  
   
@@ -59,10 +63,6 @@ In short, here is a useful screenshot from the guide:
     (1) IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/cyberark/SkyArk/master/AzureStealth/AzureStealth.ps1')  
     (2) Scan-AzureAdmins  
 ```
-  
-### AzureStealth DEMO: 
-  
-![Demo](https://github.com/Hechtov/Photos/blob/master/SkyArk/AzureStealth%20-%20short%20demo1.gif?raw=true)  
   
 ### Permissions for running the AzureStealth scan:
 AzureStealth only needs Read-Only permissions over the Azure Directory and Subscriptions that you wish to scan.  
