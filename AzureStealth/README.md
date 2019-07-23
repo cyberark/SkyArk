@@ -60,7 +60,8 @@ In short, here is a useful screenshot from the guide:
     (2) Scan-AzureAdmins  
 ```
   
-###AzureStealth DEMO:**  
+### AzureStealth DEMO: 
+  
 ![Demo](https://github.com/Hechtov/Photos/blob/master/SkyArk/AzureStealth%20-%20short%20demo1.gif?raw=true)  
   
 ### Permissions for running the AzureStealth scan:
