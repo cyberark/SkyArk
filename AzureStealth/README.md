@@ -5,7 +5,7 @@
 With the AzureStealth’s scanning results - blue and red teamers can discover who are the users with the most sensitive and risky permissions.  
 Potential attackers are hunting for those users and the defensive teams must make sure these privileged users are well secured - have strong, rotated and safety stored credentials, have MFA enabled, being monitored carefully, etc.  
   
-Remember that we cannot protect the things we don’t aware of, and AzureStealth helps in the complex mission of discovering the most privileged Azure users - including the straight-forward admins and also the stealthy shadow admins that could easily escalate their privileges and become full admins as well.
+Remember that we cannot protect the things we aren't aware of, and AzureStealth helps in the complex mission of discovering the most privileged Azure users - including the straight-forward admins and also the stealthy shadow admins that could easily escalate their privileges and become full admins as well.
   
 ### AzureStealth DEMO: 
   
