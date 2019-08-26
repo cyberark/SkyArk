@@ -29,11 +29,12 @@ version 0.4: 13.3.18
 Version 1.0: RSA USA conference publication (19.4.18)
 Version 1.1: 23.5.19 - Added the final summary report in a txt format
 version 1.2: 13.7.19 - MOdified as part of SkyArk and the new AzureStealth scan
+version 1.3: 26.8.19 - Added a few more filtering rules
 
 #>
 
 
-$AWStealthVersion = "v1.2"
+$AWStealthVersion = "v1.3"
 
 $AWStealth = @"
 ------------------------------------------------------
