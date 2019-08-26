@@ -230,186 +230,300 @@ function Check-PrivilegedPolicy {
                 else {
                     $policyCondition = "noCondition"
                 }
-                
-                # check for Shadow Admins' policies and search for other privileged entities
-                #############################################################################################################################################################(1)
-                # */* full cloud admin senario
-                if ($_.Action | ? {($_ -eq "*")}) {
-                    if ($_.Resource | ? {($_ -eq "*")}) {
-                        $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "FullAWSAdmin"
+                $broadResource = $false
+                if ($_.Resource | ? {($_ -eq "*") -or ($_ -eq "arn:aws:iam::*:user/*") -or ($_ -eq "arn:aws:iam::*:group/*") `
+                    -or ($_ -eq "arn:aws:iam::*:role/*") -or ($_ -eq "arn:aws:iam::*:user/*") -or ($_ -eq "arn:aws:iam::*:policy/*") `
+                    -or ($_ -eq "arn:aws:iam::*:instance-profile/*") -or ($_ -eq "arn:aws:ec2:*:*:instance/*") `
+                    -or ($_ -eq "arn:aws:lambda:*:*:function:*") -or ($_ -eq "arn:aws:glue:*:*:catalog/*") -or ($_ -eq "arn:aws:cloudformation:*:*:stack/*/*") `
+                    -or ($_ -eq "arn:aws:codestar:*:*:project/*") -or ($_ -eq "arn:aws:codestar:*:*:notebook-instance/*")}) {
+                    # check for Shadow Admins' policies and search for other privileged entities
+                    #############################################################################################################################################################(1)
+                    # */* full cloud admin senario
+                    if ($_.Action | ? {($_ -eq "*")}) {
+                        if ($_.Resource | ? {($_ -eq "*")}) {
+                            $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "FullAWSAdmin"
+                        }
                     }
-                }
-                #############################################################################################################################################################(2)
-                # check for the sensitive "CreateAccessKey" permission to other entities
-                # example for a dangerous usage with AWS CLI: "aws iam create-access-key --user-name administrator"
-                if ($_.Action | ? {($_ -eq "iam:CreateAccessKey")}) {
-                    if ($_.Resource | ? {($_ -eq "*") -or ($_ -eq "arn:aws:iam::*:user/*")}) {
-                        #$isPrivileged = $true
-                        #$privilegeType += ",ShadowCreateAccessKeys"
-                        $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "ShadowCreateAccessKeys"
+                    #############################################################################################################################################################(2)
+                    # check for the sensitive "CreateAccessKey" permission to other entities
+                    # example for a dangerous usage with AWS CLI: "aws iam create-access-key --user-name administrator"
+                    if ($_.Action | ? {($_ -eq "iam:CreateAccessKey")}) {
+                        if ($_.Resource | ? {($_ -eq "*") -or ($_ -eq "arn:aws:iam::*:user/*")}) {
+                            #$isPrivileged = $true
+                            #$privilegeType += ",ShadowCreateAccessKeys"
+                            $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "ShadowCreateAccessKeys"
+                        }
                     }
-                }
-                #############################################################################################################################################################(3)
-                # check for the sensitive "Attach*Policy" permissions to other entities
-                # example for a dangerous usage with AWS CLI: "aws iam attach-user-policy --policy-arn arn:aws:iam::aws:policy/AdministratorAccess --user-name userAttachPolicy"
-                if ($_.Action | ? {($_ -eq "iam:AttachUserPolicy")}) {
-                    if ($_.Resource | ? {($_ -eq "*") -or ($_ -eq "arn:aws:iam::*:user/*")}) {
-                        $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "ShadowAttachUserPolicy"
+                    #############################################################################################################################################################(3)
+                    # check for the sensitive "Attach*Policy" permissions to other entities
+                    # example for a dangerous usage with AWS CLI: "aws iam attach-user-policy --policy-arn arn:aws:iam::aws:policy/AdministratorAccess --user-name userAttachPolicy"
+                    if ($_.Action | ? {($_ -eq "iam:AttachUserPolicy")}) {
+                        if ($_.Resource | ? {($_ -eq "*") -or ($_ -eq "arn:aws:iam::*:user/*")}) {
+                            $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "ShadowAttachUserPolicy"
+                        }
                     }
-                }
-                if ($_.Action | ? {($_ -eq "iam:AttachGroupPolicy")}) {
-                    if ($_.Resource | ? {($_ -eq "*") -or ($_ -eq "arn:aws:iam::*:group/*")}) {
-                        $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "ShadowAttachGroupPolicy"
+                    if ($_.Action | ? {($_ -eq "iam:AttachGroupPolicy")}) {
+                        if ($_.Resource | ? {($_ -eq "*") -or ($_ -eq "arn:aws:iam::*:group/*")}) {
+                            $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "ShadowAttachGroupPolicy"
+                        }
                     }
-                }
-                if ($_.Action | ? {($_ -eq "iam:AttachRolePolicy")}) {
-                    if ($_.Resource | ? {($_ -eq "*") -or ($_ -eq "arn:aws:iam::*:role/*")}) {
-                        $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "ShadowAttachRolePolicy"
+                    if ($_.Action | ? {($_ -eq "iam:AttachRolePolicy")}) {
+                        if ($_.Resource | ? {($_ -eq "*") -or ($_ -eq "arn:aws:iam::*:role/*")}) {
+                            $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "ShadowAttachRolePolicy"
+                        }
                     }
-                }
-                #############################################################################################################################################################(4)
-                # check for the sensitive "Put*Policy" permissions to other entities
-                # example for a dangerous usage with AWS CLI: aws iam put-user-policy --user-name shadowPutPolicy --policy-name AdminPolicy --policy-document "file:///Work/AWS/AWShadowAdmins/Demo/AdminPermissionPolicy.json"
-                if ($_.Action | ? {($_ -eq "iam:PutUserPolicy")}) {
-                    if ($_.Resource | ? {($_ -eq "*") -or ($_ -eq "arn:aws:iam::*:user/*")}) {
-                        $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "ShadowPutUserPolicy"
+                    #############################################################################################################################################################(4)
+                    # check for the sensitive "Put*Policy" permissions to other entities
+                    # example for a dangerous usage with AWS CLI: aws iam put-user-policy --user-name shadowPutPolicy --policy-name AdminPolicy --policy-document "file:///Work/AWS/AWShadowAdmins/Demo/AdminPermissionPolicy.json"
+                    if ($_.Action | ? {($_ -eq "iam:PutUserPolicy")}) {
+                        if ($_.Resource | ? {($_ -eq "*") -or ($_ -eq "arn:aws:iam::*:user/*")}) {
+                            $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "ShadowPutUserPolicy"
+                        }
                     }
-                }
-                if ($_.Action | ? {($_ -eq "iam:PutGroupPolicy")}) {
-                    if ($_.Resource | ? {($_ -eq "*") -or ($_ -eq "arn:aws:iam::*:group/*")}) {
-                        $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "ShadowPutGroupPolicy"
+                    if ($_.Action | ? {($_ -eq "iam:PutGroupPolicy")}) {
+                        if ($_.Resource | ? {($_ -eq "*") -or ($_ -eq "arn:aws:iam::*:group/*")}) {
+                            $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "ShadowPutGroupPolicy"
+                        }
                     }
-                }
-                if ($_.Action | ? {($_ -eq "iam:PutRolePolicy")}) {
-                    if ($_.Resource | ? {($_ -eq "*") -or ($_ -eq "arn:aws:iam::*:role/*")}) {
-                        $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "ShadowPutRolePolicy"
+                    if ($_.Action | ? {($_ -eq "iam:PutRolePolicy")}) {
+                        if ($_.Resource | ? {($_ -eq "*") -or ($_ -eq "arn:aws:iam::*:role/*")}) {
+                            $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "ShadowPutRolePolicy"
+                        }
                     }
-                }
-                #############################################################################################################################################################(5)
-                # check for the sensitive "CreatePolicy" permissions to other entities
-                # example for a dangerous usage with AWS CLI: aws iam create-policy --policy-name my-read-only-policy --policy-document "file:///Work/AWS/AWShadowAdmins/Demo/AdminPermissionPolicy.json"
-                if ($_.Action | ? {($_ -eq "iam:CreatePolicy")}) {
-                    if ($_.Resource | ? {($_ -eq "*") -or ($_ -eq "arn:aws:iam::*:policy/*")}) {
-                        $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "ShadowCreatePolicy"
+                    #############################################################################################################################################################(5)
+                    # check for the sensitive "CreatePolicy" permissions to other entities
+                    # example for a dangerous usage with AWS CLI: aws iam create-policy --policy-name my-read-only-policy --policy-document "file:///Work/AWS/AWShadowAdmins/Demo/AdminPermissionPolicy.json"
+                    if ($_.Action | ? {($_ -eq "iam:CreatePolicy")}) {
+                        if ($_.Resource | ? {($_ -eq "*") -or ($_ -eq "arn:aws:iam::*:policy/*")}) {
+                            $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "ShadowCreatePolicy"
+                        }
                     }
-                }
-                #############################################################################################################################################################(6)
-                # check for the sensitive "UpdateLoginProfile" permissions to other entities
-                # example for a dangerous usage with AWS CLI: "aws iam update-login-profile --user-name ShadowTest --password Cyber123"
-                if ($_.Action | ? {($_ -eq "iam:UpdateLoginProfile")}) {
-                    if ($_.Resource | ? {($_ -eq "*") -or ($_ -eq "arn:aws:iam::*:user/*")}) {
-                        $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "shadowUpdateLoginProfiles"
+                    #############################################################################################################################################################(6)
+                    # check for the sensitive "UpdateLoginProfile" permissions to other entities
+                    # example for a dangerous usage with AWS CLI: "aws iam update-login-profile --user-name ShadowTest --password Cyber123"
+                    if ($_.Action | ? {($_ -eq "iam:UpdateLoginProfile")}) {
+                        if ($_.Resource | ? {($_ -eq "*") -or ($_ -eq "arn:aws:iam::*:user/*")}) {
+                            $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "shadowUpdateLoginProfiles"
+                        }
                     }
-                }
-                #############################################################################################################################################################(7)
-                # check for the sensitive "CreateLoginProfile" permissions to other entities
-                # example for a dangerous usage with AWS CLI: "aws iam create-login-profile --cli-input-json file:///Work/AWS/AWShadowAdmins/Demo/LoginProfile.json"
-                if ($_.Action | ? {($_ -eq "iam:CreateLoginProfile")}) {
-                    if ($_.Resource | ? {($_ -eq "*") -or ($_ -eq "arn:aws:iam::*:user/*")}) {
-                        $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "shadowCreateLoginProfiles"
+                    #############################################################################################################################################################(7)
+                    # check for the sensitive "CreateLoginProfile" permissions to other entities
+                    # example for a dangerous usage with AWS CLI: "aws iam create-login-profile --cli-input-json file:///Work/AWS/AWShadowAdmins/Demo/LoginProfile.json"
+                    if ($_.Action | ? {($_ -eq "iam:CreateLoginProfile")}) {
+                        if ($_.Resource | ? {($_ -eq "*") -or ($_ -eq "arn:aws:iam::*:user/*")}) {
+                            $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "shadowCreateLoginProfiles"
+                        }
                     }
-                }
-                #############################################################################################################################################################(8)
-                # check for the sensitive "AddUserToGroup" permissions to other entities
-                # example for a dangerous usage with AWS CLI: "aws iam add-user-to-group --user-name Bob --group-name demoAdminsGroup"
-                if ($_.Action | ? {($_ -eq "iam:AddUserToGroup")}) {
-                    if ($_.Resource | ? {($_ -eq "*") -or ($_ -eq "arn:aws:iam::*:group/*")}) {
-                        $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "shadowAddUserToGroups"
+                    #############################################################################################################################################################(8)
+                    # check for the sensitive "AddUserToGroup" permissions to other entities
+                    # example for a dangerous usage with AWS CLI: "aws iam add-user-to-group --user-name Bob --group-name demoAdminsGroup"
+                    if ($_.Action | ? {($_ -eq "iam:AddUserToGroup")}) {
+                        if ($_.Resource | ? {($_ -eq "*") -or ($_ -eq "arn:aws:iam::*:group/*")}) {
+                            $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "shadowAddUserToGroups"
+                        }
                     }
-                }
-                #############################################################################################################################################################(9)
-                # check for the sensitive "CreatePolicyVersion" permissions to other entities
-                # example for a dangerous usage with AWS CLI: "aws iam create-policy-version --policy-arn arn:aws:iam::419890133200:policy/IAM-Read-Only --policy-document file:///Work/AWS/AWShadowAdmins/Demo/AdminPermissionPolicy.json --set-as-default"
-                if ($_.Action | ? {($_ -eq "iam:CreatePolicyVersion") -or ($_ -eq "iam:SetDefaultPolicyVersion")}) {
-                    if ($_.Resource | ? {($_ -eq "*") -or ($_ -eq "arn:aws:iam::*:policy/*")}) {
-                        $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "shadowSetPolicyVersions"
+                    #############################################################################################################################################################(9)
+                    # check for the sensitive "CreatePolicyVersion" permissions to other entities
+                    # example for a dangerous usage with AWS CLI: "aws iam create-policy-version --policy-arn arn:aws:iam::419890133200:policy/IAM-Read-Only --policy-document file:///Work/AWS/AWShadowAdmins/Demo/AdminPermissionPolicy.json --set-as-default"
+                    if ($_.Action | ? {($_ -eq "iam:CreatePolicyVersion") -or ($_ -eq "iam:SetDefaultPolicyVersion")}) {
+                        if ($_.Resource | ? {($_ -eq "*") -or ($_ -eq "arn:aws:iam::*:policy/*")}) {
+                            $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "shadowSetPolicyVersions"
+                        }
                     }
-                }
-                #############################################################################################################################################################(10)
-                # check for the sensitive "modifyInstanceProfile" permissions to other entities
-                # example for a dangerous usage with AWS CLI: 
-                # aws iam create-instance-profile --instance-profile-name shadowProfile
-                # aws iam add-role-to-instance-profile --role-name AdminRole --instance-profile-name shadowProfile (need the PassRole permission)
-                # aws ec2 associate-iam-instance-profile --instance-id i-003116a190790073d --iam-instance-profile Name=shadowProfile 
-                $permissionActions = $_.Action | ? {($_ -eq "iam:CreateInstanceProfile") -or ($_ -eq "iam:AddRoleToInstanceProfile") -or ($_ -eq "iam:PassRole") -or ($_ -eq "ec2:AssociateIamInstanceProfile")}
-                $permissionResources = $_.Resource | ? {($_ -eq "*") -or ($_ -eq "arn:aws:iam::*:role/*") -or ($_ -eq "arn:aws:iam::*:instance-profile/*") -or ($_ -eq "arn:aws:ec2:*:*:instance/*")}
-                if (($permissionResources.count -ge 1) -and ($permissionActions.count -ge 3)) {
-                    $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "shadowModifyInstanceProfiles"
-                }
-                #############################################################################################################################################################(11)
-                # check for the sensitive "UpdateAssumeRolePolicy" permission 
-                # example for a dangerous usage with AWS CLI: "aws iam update-assume-role-policy --role-name shadowRole --policy-document file:///Work/AWS/AWShadowAdmins/Demo/RoleTrustPolicy.json"
-                if ($_.Action | ? {($_ -eq "iam:UpdateAssumeRolePolicy")}) {
-                    if ($_.Resource | ? {($_ -eq "*") -or ($_ -eq "arn:aws:iam::*:role/*")}) {
-                        $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "shadowUpdateAssumeRolePolicy"
+                    #############################################################################################################################################################(10)
+                    # check for the sensitive "modifyInstanceProfile" permissions to other entities
+                    # example for a dangerous usage with AWS CLI: 
+                    # aws iam create-instance-profile --instance-profile-name shadowProfile
+                    # aws iam add-role-to-instance-profile --role-name AdminRole --instance-profile-name shadowProfile (need the PassRole permission)
+                    # aws ec2 associate-iam-instance-profile --instance-id i-003116a190790073d --iam-instance-profile Name=shadowProfile 
+                    $permissionActions = $_.Action | ? {($_ -eq "iam:CreateInstanceProfile") -or ($_ -eq "iam:AddRoleToInstanceProfile") -or ($_ -eq "iam:PassRole") -or ($_ -eq "ec2:AssociateIamInstanceProfile")}
+                    $permissionResources = $_.Resource | ? {($_ -eq "*") -or ($_ -eq "arn:aws:iam::*:role/*") -or ($_ -eq "arn:aws:iam::*:instance-profile/*") -or ($_ -eq "arn:aws:ec2:*:*:instance/*")}
+                    if (($permissionResources.count -ge 1) -and ($permissionActions.count -ge 3)) {
+                        $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "shadowModifyInstanceProfiles"
                     }
-                }
-                #############################################################################################################################################################(12)
-                if ($_.Action | ? {($_ -eq "iam:*")}) {
-                    if ($_.Resource | ? {($_ -eq "*") -or ($_ -eq "arn:aws:iam::*:user/*")-or ($_ -eq "arn:aws:iam::*:group/*")-or ($_ -eq "arn:aws:iam::*:role/*") -or ($_ -eq "arn:aws:iam::*:policy/*") -or ($_ -eq "arn:aws:iam::*:instance-profile/*")}) {
-                        $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "FullIAMadmin"
+                    #############################################################################################################################################################(11)
+                    # check for the sensitive "UpdateAssumeRolePolicy" permission 
+                    # example for a dangerous usage with AWS CLI: "aws iam update-assume-role-policy --role-name shadowRole --policy-document file:///Work/AWS/AWShadowAdmins/Demo/RoleTrustPolicy.json"
+                    if ($_.Action | ? {($_ -eq "iam:UpdateAssumeRolePolicy")}) {
+                        if ($_.Resource | ? {($_ -eq "*") -or ($_ -eq "arn:aws:iam::*:role/*")}) {
+                            $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "shadowUpdateAssumeRolePolicy"
+                        }
                     }
-                }
-                #############################################################################################################################################################(13)
-                if ($_.Action | ? {($_ -eq "s3:*")}) {
-                    if ($_.Resource | ? {($_ -eq "*")}) {
-                        $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "FullS3admin"
+                    #############################################################################################################################################################(12)
+                    if ($_.Action | ? {($_ -eq "iam:*")}) {
+                        if ($_.Resource | ? {($_ -eq "*") -or ($_ -eq "arn:aws:iam::*:user/*")-or ($_ -eq "arn:aws:iam::*:group/*")-or ($_ -eq "arn:aws:iam::*:role/*") -or ($_ -eq "arn:aws:iam::*:policy/*") -or ($_ -eq "arn:aws:iam::*:instance-profile/*")}) {
+                            $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "FullIAMadmin"
+                        }
                     }
-                }
-                #############################################################################################################################################################(14)
-                if ($_.Action | ? {($_ -eq "ec2:*")}) {
-                    if ($_.Resource | ? {($_ -eq "*")}) {
-                        $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "FullEC2admin"
+                    #############################################################################################################################################################(13)
+                    if ($_.Action | ? {($_ -eq "s3:*")}) {
+                        if ($_.Resource | ? {($_ -eq "*")}) {
+                            $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "FullS3admin"
+                        }
                     }
-                }
-                #############################################################################################################################################################(14)
-                if ($_.Action | ? {($_ -eq "kms:*")}) {
-                    if ($_.Resource | ? {($_ -eq "*")}) {
-                        $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "FullKMSadmin"
+                    #############################################################################################################################################################(14)
+                    if ($_.Action | ? {($_ -eq "ec2:*")}) {
+                        if ($_.Resource | ? {($_ -eq "*")}) {
+                            $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "FullEC2admin"
+                        }
                     }
-                }
-                #############################################################################################################################################################(14)
-                if ($_.Action | ? {($_ -eq "sts:*")}) {
-                    if ($_.Resource | ? {($_ -eq "*")}) {
-                        $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "FullSTSadmin"
+                    #############################################################################################################################################################(15)
+                    if ($_.Action | ? {($_ -eq "kms:*")}) {
+                        if ($_.Resource | ? {($_ -eq "*")}) {
+                            $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "FullKMSadmin"
+                        }
                     }
-                }
-                #############################################################################################################################################################(14)
-                if ($_.Action | ? {($_ -eq "Cloudformation:*")}) {
-                    if ($_.Resource | ? {($_ -eq "*")}) {
-                        $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "FullCloudformationAdmin"
+                    #############################################################################################################################################################(16)
+                    if ($_.Action | ? {($_ -eq "sts:*")}) {
+                        if ($_.Resource | ? {($_ -eq "*")}) {
+                            $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "FullSTSadmin"
+                        }
                     }
-                }
-                #############################################################################################################################################################(14)
-                if ($_.Action | ? {($_ -eq "lambda:*")}) {
-                    if ($_.Resource | ? {($_ -eq "*")}) {
-                        $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "FullLambdaAdmin"
+                    #############################################################################################################################################################(17)
+                    if ($_.Action | ? {($_ -eq "Cloudformation:*")}) {
+                        if ($_.Resource | ? {($_ -eq "*")}) {
+                            $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "FullCloudformationAdmin"
+                        }
                     }
-                }
-                #############################################################################################################################################################(15)
-                if ($_.Action | ? {($_ -eq "iam:attach*")}) {
-                    if ($_.Resource | ? {($_ -eq "*") -or ($_ -eq "arn:aws:iam::*:user/*")-or ($_ -eq "arn:aws:iam::*:group/*")-or ($_ -eq "arn:aws:iam::*:role/*")}) {
-                        $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "IAMattacAdmin"
+                    #############################################################################################################################################################(18)
+                    if ($_.Action | ? {($_ -eq "lambda:*")}) {
+                        if ($_.Resource | ? {($_ -eq "*")}) {
+                            $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "FullLambdaAdmin"
+                        }
                     }
-                }
-                #############################################################################################################################################################(16)
-                if ($_.Action | ? {($_ -eq "iam:put*")}) {
-                    if ($_.Resource | ? {($_ -eq "*") -or ($_ -eq "arn:aws:iam::*:user/*")-or ($_ -eq "arn:aws:iam::*:group/*")-or ($_ -eq "arn:aws:iam::*:role/*")}) {
-                        $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "IAMputAdmin"
+                    #############################################################################################################################################################(19)
+                    if ($_.Action | ? {($_ -eq "iam:attach*")}) {
+                        if ($_.Resource | ? {($_ -eq "*") -or ($_ -eq "arn:aws:iam::*:user/*")-or ($_ -eq "arn:aws:iam::*:group/*")-or ($_ -eq "arn:aws:iam::*:role/*")}) {
+                            $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "IAMattachAdmin"
+                        }
                     }
-                }
-                #############################################################################################################################################################(17)
-                if ($_.Action | ? {($_ -eq "iam:add*")}) {
-                    if ($_.Resource | ? {($_ -eq "*") -or ($_ -eq "arn:aws:iam::*:group/*")}) {
-                        $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "IAMaddAdmin"
+                    #############################################################################################################################################################(20)
+                    if ($_.Action | ? {($_ -eq "iam:put*")}) {
+                        if ($_.Resource | ? {($_ -eq "*") -or ($_ -eq "arn:aws:iam::*:user/*")-or ($_ -eq "arn:aws:iam::*:group/*")-or ($_ -eq "arn:aws:iam::*:role/*")}) {
+                            $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "IAMputAdmin"
+                        }
                     }
-                }
-                #############################################################################################################################################################(18)
-                if ($_.Action | ? {($_ -eq "iam:create*")}) {
-                    if ($_.Resource | ? {($_ -eq "*") -or ($_ -eq "arn:aws:iam::*:policy/*")}) {
-                        $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "IAMcreatAdmin"
+                    #############################################################################################################################################################(21)
+                    if ($_.Action | ? {($_ -eq "iam:add*")}) {
+                        if ($_.Resource | ? {($_ -eq "*") -or ($_ -eq "arn:aws:iam::*:group/*")}) {
+                            $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "IAMaddAdmin"
+                        }
                     }
-                }    
+                    #############################################################################################################################################################(22)
+                    if ($_.Action | ? {($_ -eq "iam:create*")}) {
+                        if ($_.Resource | ? {($_ -eq "*") -or ($_ -eq "arn:aws:iam::*:policy/*")}) {
+                            $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "IAMcreateAdmin"
+                        }
+                    }
+                    #############################################################################################################################################################(23)
+                    if ($_.Action | ? {($_ -eq "iam:CreatePolicyVersion")}) {
+                        if ($_.Resource | ? {($_ -eq "*") -or ($_ -eq "arn:aws:iam::*:policy/*")}) {
+                            $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "shadowCreatePolicyVersions"
+                        }
+                    }
+                    #############################################################################################################################################################(24)
+                    $permissionActions = $_.Action | ? {($_ -eq "iam:PassRole") -or ($_ -eq "ec2:RunInstances")}
+                    if ($permissionActions.count -eq 2) {
+                        if ($_.Resource | ? {($_ -eq "*") -or ($_ -eq "arn:aws:ec2:*:*:instance/*")}) {
+                            $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "shadowRunNewInstancesWithRoles"
+                        }
+                    }          
+                    #############################################################################################################################################################(25)
+                    # The following permissions scenarios were described by Rhino Security Labs:
+                    # https://rhinosecuritylabs.com/aws/aws-privilege-escalation-methods-mitigation/
+                    # https://github.com/RhinoSecurityLabs/AWS-IAM-Privilege-Escalation
+                    # Thanks to the researcher Spencer Gietzen on those additional privilege esclation techniques.
+                    #############################################################################################################################################################(26)
+                    if ($_.Action | ? {($_ -eq "iam:PassRole")}){
+                        # Passing a role to a new Lambda function, and invoke it
+                        if ($_.Action | ? {($_ -eq "lambda:CreateFunction")}){
+                            if ($_.Resource | ? {($_ -eq "*") -or ($_ -eq "arn:aws:lambda:*:*:function:*")}) {
+                                if ($_.Action | ? {($_ -eq "iam:ambda:InvokeFunction") -or ($_ -eq "lambda:AddPermission") -or ($_ -eq "lambda:CreateEventSourceMapping")}) {
+                                    $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "shadowRunLambda"
+                                }
+                            }
+                        }
+                        # Passing a role to a Glue Development Endpoint
+                        if ($_.Action | ? {($_ -eq "glue:CreateDevEndpoint")}){
+                            if ($_.Resource | ? {($_ -eq "*") -or ($_ -eq "arn:aws:glue:*:*:catalog/*")}) {
+                                $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "shadowGlueDevEndpoint"
+                            }
+                        } 
+                        # Passing a role to CloudFormation
+                        if ($_.Action | ? {($_ -eq "cloudformation:CreateStack")}){
+                            if ($_.Resource | ? {($_ -eq "*") -or ($_ -eq "arn:aws:cloudformation:*:*:stack/*/*")}) {
+                                $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "shadowCloudFormation"
+                            }
+                        }
+                        # Passing a role to Data Pipeline
+                        $permissionActions = $_.Action | ? {($_ -eq "datapipeline:CreatePipeline") -or ($_ -eq "datapipeline:PutPipelineDefinition")}
+                        if ($permissionActions.count -eq 2) {
+                            if ($_.Resource | ? {($_ -eq "*")}) {
+                                $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "shadowDataPipeline"
+                            }
+                        }
+                        # Passing a role to a new CodeStar project
+                        if ($_.Action | ? {($_ -eq "codestar:CreateProject")}){
+                            if ($_.Resource | ? {($_ -eq "*") -or ($_ -eq "arn:aws:codestar:*:*:project/*")}) {
+                                $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "shadowCodeStar"
+                            }
+                        }
+                        # Passing a role to a new SageMaker Jupyter notebook
+                        $permissionActions = $_.Action | ? {($_ -eq "sagemaker:CreateNotebookInstance") -or ($_ -eq "sagemaker:CreatePresignedNotebookInstanceUrl")}
+                        if ($permissionActions.count -eq 2) {
+                            if ($_.Resource | ? {($_ -eq "*") -or ($_ -eq "arn:aws:codestar:*:*:notebook-instance/*")}) {
+                                $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "shadowSageMaker"
+                            }
+                        }
+                    }
+
+                    #############################################################################################################################################################(27)
+                    # Updating the code of an existing Lambda function
+                    if ($_.Action | ? {($_ -eq "lambda:UpdateFunctionCode")}) {
+                        if ($_.Resource | ? {($_ -eq "*") -or ($_ -eq "arn:aws:lambda:*:*:function:*")}) {
+                            $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "shadowUpdateLambda"
+                        }
+                    }
+                    #############################################################################################################################################################(28)
+
+                    #############################################################################################################################################################(29)
+                    # Updating an existing Glue Dev Endpoint
+                    if ($_.Action | ? {($_ -eq "glue:UpdateDevEndpoint")}) {
+                        if ($_.Resource | ? {($_ -eq "*") -or ($_ -eq "arn:aws:glue:*:*:catalog/*")}) {
+                            $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "shadowGlueUpdate"
+                        }
+                    }
+                    #############################################################################################################################################################(30)
+                    # Creating a CodeStar project from a template
+                    if ($_.Action | ? {($_ -eq "codestar:CreateProjectFromTemplate")}) {
+                        if ($_.Resource | ? {($_ -eq "*") -or ($_ -eq "arn:aws:codestar:*:*:project/*")}) {
+                            $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "shadowCodeStar"
+                        }
+                    }
+                    #############################################################################################################################################################(31)
+                    # Creating a new CodeStar project and associating a team member
+                    $permissionActions = $_.Action | ? {($_ -eq "codestar:CreateProject") -or ($_ -eq "codestar:AssociateTeamMember")}
+                    if ($permissionActions.count -eq 2) {
+                        if ($_.Resource | ? {($_ -eq "*") -or ($_ -eq "arn:aws:codestar:*:*:project/*")}) {
+                            $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "shadowCodeStar"
+                        }
+                    }
+                    #############################################################################################################################################################(32)
+                    # Adding a malicious Lambda layer to an existing Lambda function
+                    if ($_.Action | ? {($_ -eq "lambda:UpdateFunctionConfiguration")}) {
+                        if ($_.Resource | ? {($_ -eq "*") -or ($_ -eq "arn:aws:codestar:*:*:function/*")}) {
+                            $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "shadowAddLambda"
+                        }
+                    }
+                    #############################################################################################################################################################(33)
+                    # Gaining access to an existing SageMaker Jupyter notebook
+                    if ($_.Action | ? {($_ -eq "sagemaker:CreatePresignedNotebookInstanceUrl")}) {
+                        if ($_.Resource | ? {($_ -eq "*") -or ($_ -eq "arn:aws:codestar:*:*:notebook-instance/*")}) {
+                            $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "shadowSageMaker"
+                        }
+                    }
+                    #############################################################################################################################################################
+                }
             }
         }
     }
