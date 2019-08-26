@@ -486,22 +486,20 @@ function Check-PrivilegedPolicy {
                         }
                     }
                     #############################################################################################################################################################(28)
-
-                    #############################################################################################################################################################(29)
                     # Updating an existing Glue Dev Endpoint
                     if ($_.Action | ? {($_ -eq "glue:UpdateDevEndpoint")}) {
                         if ($_.Resource | ? {($_ -eq "*") -or ($_ -eq "arn:aws:glue:*:*:catalog/*")}) {
                             $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "shadowGlueUpdate"
                         }
                     }
-                    #############################################################################################################################################################(30)
+                    #############################################################################################################################################################(29)
                     # Creating a CodeStar project from a template
                     if ($_.Action | ? {($_ -eq "codestar:CreateProjectFromTemplate")}) {
                         if ($_.Resource | ? {($_ -eq "*") -or ($_ -eq "arn:aws:codestar:*:*:project/*")}) {
                             $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "shadowCodeStar"
                         }
                     }
-                    #############################################################################################################################################################(31)
+                    #############################################################################################################################################################(30)
                     # Creating a new CodeStar project and associating a team member
                     $permissionActions = $_.Action | ? {($_ -eq "codestar:CreateProject") -or ($_ -eq "codestar:AssociateTeamMember")}
                     if ($permissionActions.count -eq 2) {
@@ -509,14 +507,14 @@ function Check-PrivilegedPolicy {
                             $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "shadowCodeStar"
                         }
                     }
-                    #############################################################################################################################################################(32)
+                    #############################################################################################################################################################(31)
                     # Adding a malicious Lambda layer to an existing Lambda function
                     if ($_.Action | ? {($_ -eq "lambda:UpdateFunctionConfiguration")}) {
                         if ($_.Resource | ? {($_ -eq "*") -or ($_ -eq "arn:aws:codestar:*:*:function/*")}) {
                             $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "shadowAddLambda"
                         }
                     }
-                    #############################################################################################################################################################(33)
+                    #############################################################################################################################################################(32)
                     # Gaining access to an existing SageMaker Jupyter notebook
                     if ($_.Action | ? {($_ -eq "sagemaker:CreatePresignedNotebookInstanceUrl")}) {
                         if ($_.Resource | ? {($_ -eq "*") -or ($_ -eq "arn:aws:codestar:*:*:notebook-instance/*")}) {
