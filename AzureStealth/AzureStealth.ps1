@@ -23,6 +23,7 @@ Version 0.4 - 11.07.19
 Version 1.0 - 12.07.19 - published on GitHub as part of SkyArk tool:
 https://github.com/cyberark/SkyArk
 https://github.com/cyberark/SkyArk/tree/master/AzureStealth
+Version 1.1 - 01.09.19 - added two sensitive directory roles
 
 ###########################################################################################
 
@@ -66,7 +67,7 @@ You can load and run the scan directly from GitHub, simply use the following Pow
 ###########################################################################################
 #>
 
-$AzureStealthVersion = "v1.0"
+$AzureStealthVersion = "v1.1"
 
 $AzureStealth = @"
 
@@ -287,6 +288,7 @@ function Add-PrivilegeAzureEntity {
     )
 
     $fullDirectoryAdmins = @("Application Administrator", "Authentication Administrator",`
+        "Password Administrator", "Privileged Authentication Administrator",`
         "Cloud Application Administrator", "Helpdesk Administrator", "Privileged Role Administrator", "User Account Administrator")
     $sensitiveDirectoryAdmins = @("SharePoint Service Administrator", "Exchange Service Administrator",`
         "Conditional Access Administrator", "Security Administrator")
@@ -490,7 +492,8 @@ function Run-TenantScan {
     7.	User Account Administrator - Can manage all aspects of users and groups, including resetting passwords for limited admins.
     #>
     $privilegedDirectoryRoles = @("Company Administrator","Application Administrator", "Authentication Administrator",`
-        "Cloud Application Administrator", "Helpdesk Administrator", "Privileged Role Administrator", "User Account Administrator")
+        "Password Administrator", "Privileged Authentication Administrator", "Cloud Application Administrator",`
+        "Helpdesk Administrator", "Privileged Role Administrator", "User Account Administrator")
     $sensitiveDirectoryRoles = @("SharePoint Service Administrator", "Exchange Service Administrator","Conditional Access Administrator", "Security Administrator")
 
     $privilegedDirectoryRoles | foreach {
