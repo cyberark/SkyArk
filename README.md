@@ -48,7 +48,7 @@ In short:
 (2) Start-AzureStealth
 ```
  AzureStealth needs only Read-Only permissions over the scanned Azure Directory (Tenant) and Subscription.  
- * You can also run the scan easily from within the Azure Portal by using the built-in CloudShell:
+ *You can also run the scan easily from within the Azure Portal by using the built-in CloudShell:  
  ```
     (1) IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/cyberark/SkyArk/master/AzureStealth/AzureStealth.ps1')  
     (2) Scan-AzureAdmins  
