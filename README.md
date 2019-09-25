@@ -48,7 +48,13 @@ In short:
 (2) Start-AzureStealth
 ```
  AzureStealth needs only Read-Only permissions over the scanned Azure Directory (Tenant) and Subscription.  
- *You can also run the scan easily from the Azure Portal by using the built-in CloudShell.  
+ * You can also run the scan easily from within the Azure Portal by using the built-in CloudShell:
+ ```
+    (1) IEX (New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/cyberark/SkyArk/master/AzureStealth/AzureStealth.ps1')  
+    (2) Scan-AzureAdmins  
+```  
+ **AzureStealth DEMO:**  
+ ![Demo](https://github.com/Hechtov/Photos/blob/master/SkyArk/AzureStealth%20-%20short%20demo1.gif?raw=true)  
    
   ### 2. AWStealth Scan
 **Discover the most privileged entities in the scanned AWS environment - including the Azure Shadow Admins.**
