@@ -6,7 +6,7 @@
 Written by: Asaf Hecht (@Hechtov)               
 More Updates on Twitter                    
 
-It's time to discover critical AWS informaiton on the target hosts!
+It's time to discover critical AWS information on the target hosts!
 
 HOW TO RUN:  
 **Use the command:**
