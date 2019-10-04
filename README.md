@@ -5,11 +5,11 @@
  1.  **AzureStealth**  - Scans Azure environments   
  2.  **AWStealth**  - Scan AWS environments   
   
-### Those two scanning modules will discover the most privileged entities in the target AWS and Azure.  
+### These two scanning modules will discover the most privileged entities in the target AWS and Azure.  
 
 # The Main Goal - Discover The Most Privileged Cloud Users
 SkyArk currently focuses on mitigating the new threat of Cloud Shadow Admins, and helps organizations to discover, assess and protect cloud privileged entities.  
-Stealthy and undercover cloud admins may reside in every public cloud platform and SkyArk helps mitigating the the risk in AWS and Azure.  
+Stealthy and undercover cloud admins may reside in every public cloud platform and SkyArk helps mitigating the risk in AWS and Azure.  
 **In defensive/pentest/risk assessment procedures - make sure to address the threat and validate that those privileged entities are indeed well secured.**  
 
 
@@ -27,7 +27,7 @@ About a year later, we added the AzureStealth scan to SkyArk for mitigating the 
   
 # Tool Description
 SkyArk currently contains two main scanning modules **AWStealth** and **AzureStealth**.  
-With the the scanning results - organizations can discover the entities (users, groups and roles) who have the most sensitive and risky permissions.  
+With the scanning results - organizations can discover the entities (users, groups and roles) who have the most sensitive and risky permissions.  
 In addition, we also encourage organizations to scan their environments from time to time and search for suspicious deviations in their privileged entities list.  
 **Potential attackers are hunting for those users and the defensive teams should make sure these privileged users are well secured - have strong, rotated and safety stored credentials, have MFA enabled, being monitored carefully, etc.**   
 Remember that we cannot protect the things we don’t aware of, and SkyArk helps in the complex mission of discovering the most privileged cloud entities - including the straight-forward admins and also the stealthy shadow admins that could easily escalate their privileges and become full admins as well.  
