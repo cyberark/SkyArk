@@ -147,8 +147,14 @@ function Load-AWScred {
         $DefaultRegion = read-host "What is your AWS default region (e.g. `"us-east-1`")?"
     }
     Set-DefaultAWSRegion -Region $DefaultRegion
-    $currentUser = Get-IAMUser
-    $currentUserName = $currentUser.UserName
+    if ($SessionToken) {
+        $currentUser = Get-STSCallerIdentity
+        $currentUserName = $currentUser.Arn
+    }
+    else {
+        $currentUser = Get-IAMUser
+        $currentUserName = $currentUser.UserName
+    }
     Write-Host "`n[+] Loaded AWS credentials - $tempProfile [EntityName=$currentUserName]"
 }
 
