@@ -130,7 +130,17 @@ function Load-AWScred {
         if (-not $SecretKey) {
             $SecretKey = read-host "What is the AWS SecretKey?"
         }
-        Set-AWSCredential -AccessKey $AccessKeyID -SecretKey $SecretKey -StoreAs $tempProfile
+        if (-not $SessionToken) {
+            $SessionToken = read-host "What is the AWS SessionToken (hit Enter if none)?"
+        }
+        if ($SessionToken) {
+            "SessionToken set"
+            Set-AWSCredential -AccessKey $AccessKeyID -SecretKey $SecretKey -SessionToken $SessionToken -StoreAs $tempProfile
+        }
+        else {
+            "SessionToken not set"
+            Set-AWSCredential -AccessKey $AccessKeyID -SecretKey $SecretKey -StoreAs $tempProfile
+        }
         Set-AWSCredential -ProfileName $tempProfile
     }
     if (-not $DefaultRegion) {
