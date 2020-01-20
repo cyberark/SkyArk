@@ -30,11 +30,12 @@ Version 1.0: RSA USA conference publication (19.4.18)
 Version 1.1: 23.5.19 - Added the final summary report in a txt format
 version 1.2: 13.7.19 - MOdified as part of SkyArk and the new AzureStealth scan
 version 1.3: 26.8.19 - Added a few more filtering rules
+version 1.4: 20.1.20 - Added the ability to run the scan with Session Tokens (thanks @stefankober for the help)
 
 #>
 
 
-$AWStealthVersion = "v1.3"
+$AWStealthVersion = "v1.4"
 
 $AWStealth = @"
 ------------------------------------------------------
@@ -108,6 +109,9 @@ function Load-AWScred {
         # The secret Key to use
         [string]
         $SecretKey,
+        # The session token to use (optional)
+        [string]
+		      $sessionToken,
         # The default AWS region of the scanned environment
         [string]
         $DefaultRegion,
@@ -131,14 +135,14 @@ function Load-AWScred {
             $SecretKey = read-host "What is the AWS SecretKey?"
         }
         if (-not $SessionToken) {
-            $SessionToken = read-host "What is the AWS SessionToken (hit Enter if none)?"
+            $SessionToken = read-host "Optional: What is the AWS SessionToken (hit Enter if none)?"
         }
         if ($SessionToken) {
-            "SessionToken set"
+            Write-Host "SessionToken was set"
             Set-AWSCredential -AccessKey $AccessKeyID -SecretKey $SecretKey -SessionToken $SessionToken -StoreAs $tempProfile
         }
         else {
-            "SessionToken not set"
+            Write-Host "SessionToken wasn't set"
             Set-AWSCredential -AccessKey $AccessKeyID -SecretKey $SecretKey -StoreAs $tempProfile
         }
         Set-AWSCredential -ProfileName $tempProfile
@@ -147,6 +151,7 @@ function Load-AWScred {
         $DefaultRegion = read-host "What is your AWS default region (e.g. `"us-east-1`")?"
     }
     Set-DefaultAWSRegion -Region $DefaultRegion
+    
     if ($SessionToken) {
         $currentUser = Get-STSCallerIdentity
         $currentUserName = $currentUser.Arn
@@ -1111,6 +1116,9 @@ function Scan-AWShadowAdmins {
         # The secret Key to use
         [string]
         $SecretKey,
+		      # The session token to use (optional)
+        [string]
+		      $sessionToken,
         # The default AWS region of the scanned environment
         [string]
         $DefaultRegion,
@@ -1125,7 +1133,7 @@ function Scan-AWShadowAdmins {
 
     # Load the AWS credentials
     $tempProfile = "AWStealthProfile"
-    Load-AWScred -AccessKeyID $AccessKeyID -SecretKey $SecretKey -DefaultRegion $DefaultRegion -ProfileName $ProfileName -tempProfile $tempProfile
+    Load-AWScred -AccessKeyID $AccessKeyID -SecretKey $SecretKey -sessionToken $sessionToken -DefaultRegion $DefaultRegion -ProfileName $ProfileName -tempProfile $tempProfile
     if ($ProfileName) {
         Set-AWSCredential -ProfileName $ProfileName
     }
