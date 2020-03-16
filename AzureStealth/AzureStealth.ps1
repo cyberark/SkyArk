@@ -527,7 +527,8 @@ function Run-SubscriptionScan {
     $privilegedSubscriptionRoles = @("Owner","Contributor", "User Access Administrator")
     $privilegedRBACPermissions = @("Microsoft.Authorization/*","Microsoft.Authorization/*/Write",`
     "Microsoft.Authorization/roleAssignments/*", "Microsoft.Authorization/roleDefinition/*",`
-    "Microsoft.Authorization/elevateAccess/Action","Microsoft.Authorization/roleDefinition/write",`
+    "Microsoft.Authorization/roleDefinitions/*", "Microsoft.Authorization/elevateAccess/Action",`
+    "Microsoft.Authorization/roleDefinition/write", "Microsoft.Authorization/roleDefinitions/write",`
     "Microsoft.Authorization/roleAssignments/write","Microsoft.Authorization/classicAdministrators/write")
 
     $privilegedRbacRoles = @()
