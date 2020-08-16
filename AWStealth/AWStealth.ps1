@@ -31,11 +31,11 @@ Version 1.1: 23.5.19 - Added the final summary report in a txt format
 version 1.2: 13.7.19 - MOdified as part of SkyArk and the new AzureStealth scan
 version 1.3: 26.8.19 - Added a few more filtering rules
 version 1.4: 20.1.20 - Added the ability to run the scan with Session Tokens (thanks @stefankober for the help)
-
+version 1.5: 16.8.20 - Fixed an error in the AWS PowerShell module validation
 #>
 
 
-$AWStealthVersion = "v1.4"
+$AWStealthVersion = "v1.5"
 
 $AWStealth = @"
 ------------------------------------------------------
@@ -1157,11 +1157,16 @@ function Scan-AWShadowAdmins {
     # check the AWS PowerShell Module version, because only from xxxx AWS annouced the concept of "Permissions Boundaries"
     $updatedAwsPowerShellModule = $false
     $versionAwsPowerShellModule = (Get-Module) | Where-Object {$_.Name -eq "AWSPowerShell"} | select Version
-    if ($versionAwsPowerShellModule.Version.Major -ge 3) {
-        if ($versionAwsPowerShellModule.Version.Minor -ge 3) {
-            if ($versionAwsPowerShellModule.Version.Build -ge 330) {
-                $updatedAwsPowerShellModule = $true
-            }
+    if ($versionAwsPowerShellModule.Version.Major -ge 4) {
+    	$updatedAwsPowerShellModule = $true
+    }
+    else {
+        if ($versionAwsPowerShellModule.Version.Major -eq 3){
+            if ($versionAwsPowerShellModule.Version.Minor -ge 3) {
+                if ($versionAwsPowerShellModule.Version.Build -ge 330) {
+                    $updatedAwsPowerShellModule = $true
+                }
+	    }
         }
     }
     if (-not $updatedAwsPowerShellModule) {
