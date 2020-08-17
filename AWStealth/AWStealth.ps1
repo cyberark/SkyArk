@@ -1017,7 +1017,7 @@ function Write-Report {
     $reportOutputArray.Add("#######################################################")
     $reportOutputArray.Add("")
     $reportOutputArray.Add("-> Number of privileged users without MFA protection: $numPrivilegedUserNoMFA")
-    $reportOutputArray.Add("-> Number of privileged users without constrained conditions: $numPrivilegedUserNoMFA")
+    $reportOutputArray.Add("-> Number of privileged users without constrained conditions: $numPrivilegedUsersNoCondition")
     $reportOutputArray.Add("")
     $reportOutputArray.Add("-> Number of unsecured users = no MFA and no constrained permission condition: $numPivielgedUsersNotSecured")
     if ($numPivielgedUsersNotSecured -gt 1) {
