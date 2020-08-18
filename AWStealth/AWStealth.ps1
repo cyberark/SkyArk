@@ -152,11 +152,12 @@ function Load-AWScred {
         }
         Set-AWSCredential -ProfileName $tempProfile
     }
+    if (-not $DefaultRegion) {
     # Removed the following because IAM is cross region service, and currently the tool only query the IAM [18/8/20]
-    #if (-not $DefaultRegion) {
-    #    $DefaultRegion = read-host "What is your AWS default region (e.g. `"us-east-1`")?"
-    #}
-    #Set-DefaultAWSRegion -Region $DefaultRegion
+    #   $DefaultRegion = read-host "What is your AWS default region (e.g. `"us-east-1`")?"
+    	$DefaultRegion = "us-east-1"
+    }
+    Set-DefaultAWSRegion -Region $DefaultRegion
     
     if ($SessionToken) {
         $currentUser = Get-STSCallerIdentity
