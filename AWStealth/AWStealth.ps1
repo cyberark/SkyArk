@@ -28,14 +28,15 @@ version 0.3: 8.3.18
 version 0.4: 13.3.18
 Version 1.0: RSA USA conference publication (19.4.18)
 Version 1.1: 23.5.19 - Added the final summary report in a txt format
-version 1.2: 13.7.19 - MOdified as part of SkyArk and the new AzureStealth scan
+version 1.2: 13.7.19 - Modified as part of SkyArk and the new AzureStealth scan
 version 1.3: 26.8.19 - Added a few more filtering rules
 version 1.4: 20.1.20 - Added the ability to run the scan with Session Tokens (thanks @stefankober for the help)
 version 1.5: 16.8.20 - Fixed an error in the AWS PowerShell module validation
+version 1.6: 18.8.20 - Minor fixes
 #>
 
 
-$AWStealthVersion = "v1.5"
+$AWStealthVersion = "v1.6"
 
 $AWStealth = @"
 ------------------------------------------------------
@@ -64,7 +65,10 @@ Write-Output "It's time to discover the most privileged AWS entities`n"
 Write-Output $Author
 
 try {
-    $AWSModule = Get-AWSPowerShellVersion
+    $isAwsPowerShellModuleLoaded = (Get-Module) | Where-Object {$_.Name -eq "AWSPowerShell"} 
+    if (-not $isAwsPowerShellModuleLoaded){
+        Write-Host "[+] Searching for the AWS PowerShell module..."
+    }
 }
 catch {
     try {
@@ -111,7 +115,7 @@ function Load-AWScred {
         $SecretKey,
         # The session token to use (optional)
         [string]
-		      $sessionToken,
+        $sessionToken,
         # The default AWS region of the scanned environment
         [string]
         $DefaultRegion,
@@ -147,10 +151,11 @@ function Load-AWScred {
         }
         Set-AWSCredential -ProfileName $tempProfile
     }
-    if (-not $DefaultRegion) {
-        $DefaultRegion = read-host "What is your AWS default region (e.g. `"us-east-1`")?"
-    }
-    Set-DefaultAWSRegion -Region $DefaultRegion
+    # Removed the following because IAM is cross region service, and currently the tool only query the IAM [18/8/20]
+    #if (-not $DefaultRegion) {
+    #    $DefaultRegion = read-host "What is your AWS default region (e.g. `"us-east-1`")?"
+    #}
+    #Set-DefaultAWSRegion -Region $DefaultRegion
     
     if ($SessionToken) {
         $currentUser = Get-STSCallerIdentity
@@ -325,7 +330,7 @@ function Check-PrivilegedPolicy {
                     # example for a dangerous usage with AWS CLI: "aws iam update-login-profile --user-name ShadowTest --password Cyber123"
                     if ($_.Action | ? {($_ -eq "iam:UpdateLoginProfile")}) {
                         if ($_.Resource | ? {($_ -eq "*") -or ($_ -eq "arn:aws:iam::*:user/*")}) {
-                            $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "shadowUpdateLoginProfiles"
+                            $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "ShadowUpdateLoginProfiles"
                         }
                     }
                     #############################################################################################################################################################(7)
@@ -333,7 +338,7 @@ function Check-PrivilegedPolicy {
                     # example for a dangerous usage with AWS CLI: "aws iam create-login-profile --cli-input-json file:///Work/AWS/AWShadowAdmins/Demo/LoginProfile.json"
                     if ($_.Action | ? {($_ -eq "iam:CreateLoginProfile")}) {
                         if ($_.Resource | ? {($_ -eq "*") -or ($_ -eq "arn:aws:iam::*:user/*")}) {
-                            $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "shadowCreateLoginProfiles"
+                            $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "ShadowCreateLoginProfiles"
                         }
                     }
                     #############################################################################################################################################################(8)
@@ -341,7 +346,7 @@ function Check-PrivilegedPolicy {
                     # example for a dangerous usage with AWS CLI: "aws iam add-user-to-group --user-name Bob --group-name demoAdminsGroup"
                     if ($_.Action | ? {($_ -eq "iam:AddUserToGroup")}) {
                         if ($_.Resource | ? {($_ -eq "*") -or ($_ -eq "arn:aws:iam::*:group/*")}) {
-                            $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "shadowAddUserToGroups"
+                            $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "ShadowAddUserToGroups"
                         }
                     }
                     #############################################################################################################################################################(9)
@@ -349,7 +354,7 @@ function Check-PrivilegedPolicy {
                     # example for a dangerous usage with AWS CLI: "aws iam create-policy-version --policy-arn arn:aws:iam::419890133200:policy/IAM-Read-Only --policy-document file:///Work/AWS/AWShadowAdmins/Demo/AdminPermissionPolicy.json --set-as-default"
                     if ($_.Action | ? {($_ -eq "iam:CreatePolicyVersion") -or ($_ -eq "iam:SetDefaultPolicyVersion")}) {
                         if ($_.Resource | ? {($_ -eq "*") -or ($_ -eq "arn:aws:iam::*:policy/*")}) {
-                            $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "shadowSetPolicyVersions"
+                            $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "ShadowSetPolicyVersions"
                         }
                     }
                     #############################################################################################################################################################(10)
@@ -361,14 +366,14 @@ function Check-PrivilegedPolicy {
                     $permissionActions = $_.Action | ? {($_ -eq "iam:CreateInstanceProfile") -or ($_ -eq "iam:AddRoleToInstanceProfile") -or ($_ -eq "iam:PassRole") -or ($_ -eq "ec2:AssociateIamInstanceProfile")}
                     $permissionResources = $_.Resource | ? {($_ -eq "*") -or ($_ -eq "arn:aws:iam::*:role/*") -or ($_ -eq "arn:aws:iam::*:instance-profile/*") -or ($_ -eq "arn:aws:ec2:*:*:instance/*")}
                     if (($permissionResources.count -ge 1) -and ($permissionActions.count -ge 3)) {
-                        $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "shadowModifyInstanceProfiles"
+                        $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "ShadowModifyInstanceProfiles"
                     }
                     #############################################################################################################################################################(11)
                     # check for the sensitive "UpdateAssumeRolePolicy" permission 
                     # example for a dangerous usage with AWS CLI: "aws iam update-assume-role-policy --role-name shadowRole --policy-document file:///Work/AWS/AWShadowAdmins/Demo/RoleTrustPolicy.json"
                     if ($_.Action | ? {($_ -eq "iam:UpdateAssumeRolePolicy")}) {
                         if ($_.Resource | ? {($_ -eq "*") -or ($_ -eq "arn:aws:iam::*:role/*")}) {
-                            $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "shadowUpdateAssumeRolePolicy"
+                            $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "ShadowUpdateAssumeRolePolicy"
                         }
                     }
                     #############################################################################################################################################################(12)
@@ -440,14 +445,14 @@ function Check-PrivilegedPolicy {
                     #############################################################################################################################################################(23)
                     if ($_.Action | ? {($_ -eq "iam:CreatePolicyVersion")}) {
                         if ($_.Resource | ? {($_ -eq "*") -or ($_ -eq "arn:aws:iam::*:policy/*")}) {
-                            $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "shadowCreatePolicyVersions"
+                            $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "ShadowCreatePolicyVersions"
                         }
                     }
                     #############################################################################################################################################################(24)
                     $permissionActions = $_.Action | ? {($_ -eq "iam:PassRole") -or ($_ -eq "ec2:RunInstances")}
                     if ($permissionActions.count -eq 2) {
                         if ($_.Resource | ? {($_ -eq "*") -or ($_ -eq "arn:aws:ec2:*:*:instance/*")}) {
-                            $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "shadowRunNewInstancesWithRoles"
+                            $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "ShadowRunNewInstancesWithRoles"
                         }
                     }          
                     #############################################################################################################################################################(25)
@@ -461,40 +466,40 @@ function Check-PrivilegedPolicy {
                         if ($_.Action | ? {($_ -eq "lambda:CreateFunction")}){
                             if ($_.Resource | ? {($_ -eq "*") -or ($_ -eq "arn:aws:lambda:*:*:function:*")}) {
                                 if ($_.Action | ? {($_ -eq "iam:ambda:InvokeFunction") -or ($_ -eq "lambda:AddPermission") -or ($_ -eq "lambda:CreateEventSourceMapping")}) {
-                                    $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "shadowRunLambda"
+                                    $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "ShadowRunLambda"
                                 }
                             }
                         }
                         # Passing a role to a Glue Development Endpoint
                         if ($_.Action | ? {($_ -eq "glue:CreateDevEndpoint")}){
                             if ($_.Resource | ? {($_ -eq "*") -or ($_ -eq "arn:aws:glue:*:*:catalog/*")}) {
-                                $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "shadowGlueDevEndpoint"
+                                $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "ShadowGlueDevEndpoint"
                             }
                         } 
                         # Passing a role to CloudFormation
                         if ($_.Action | ? {($_ -eq "cloudformation:CreateStack")}){
                             if ($_.Resource | ? {($_ -eq "*") -or ($_ -eq "arn:aws:cloudformation:*:*:stack/*/*")}) {
-                                $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "shadowCloudFormation"
+                                $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "ShadowCloudFormation"
                             }
                         }
                         # Passing a role to Data Pipeline
                         $permissionActions = $_.Action | ? {($_ -eq "datapipeline:CreatePipeline") -or ($_ -eq "datapipeline:PutPipelineDefinition")}
                         if ($permissionActions.count -eq 2) {
                             if ($_.Resource | ? {($_ -eq "*")}) {
-                                $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "shadowDataPipeline"
+                                $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "ShadowDataPipeline"
                             }
                         }
                         # Passing a role to a new CodeStar project
                         if ($_.Action | ? {($_ -eq "codestar:CreateProject")}){
                             if ($_.Resource | ? {($_ -eq "*") -or ($_ -eq "arn:aws:codestar:*:*:project/*")}) {
-                                $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "shadowCodeStar"
+                                $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "ShadowCodeStar"
                             }
                         }
                         # Passing a role to a new SageMaker Jupyter notebook
                         $permissionActions = $_.Action | ? {($_ -eq "sagemaker:CreateNotebookInstance") -or ($_ -eq "sagemaker:CreatePresignedNotebookInstanceUrl")}
                         if ($permissionActions.count -eq 2) {
                             if ($_.Resource | ? {($_ -eq "*") -or ($_ -eq "arn:aws:codestar:*:*:notebook-instance/*")}) {
-                                $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "shadowSageMaker"
+                                $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "ShadowSageMaker"
                             }
                         }
                     }
@@ -503,21 +508,21 @@ function Check-PrivilegedPolicy {
                     # Updating the code of an existing Lambda function
                     if ($_.Action | ? {($_ -eq "lambda:UpdateFunctionCode")}) {
                         if ($_.Resource | ? {($_ -eq "*") -or ($_ -eq "arn:aws:lambda:*:*:function:*")}) {
-                            $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "shadowUpdateLambda"
+                            $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "ShadowUpdateLambda"
                         }
                     }
                     #############################################################################################################################################################(28)
                     # Updating an existing Glue Dev Endpoint
                     if ($_.Action | ? {($_ -eq "glue:UpdateDevEndpoint")}) {
                         if ($_.Resource | ? {($_ -eq "*") -or ($_ -eq "arn:aws:glue:*:*:catalog/*")}) {
-                            $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "shadowGlueUpdate"
+                            $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "ShadowGlueUpdate"
                         }
                     }
                     #############################################################################################################################################################(29)
                     # Creating a CodeStar project from a template
                     if ($_.Action | ? {($_ -eq "codestar:CreateProjectFromTemplate")}) {
                         if ($_.Resource | ? {($_ -eq "*") -or ($_ -eq "arn:aws:codestar:*:*:project/*")}) {
-                            $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "shadowCodeStar"
+                            $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "ShadowCodeStar"
                         }
                     }
                     #############################################################################################################################################################(30)
@@ -525,21 +530,21 @@ function Check-PrivilegedPolicy {
                     $permissionActions = $_.Action | ? {($_ -eq "codestar:CreateProject") -or ($_ -eq "codestar:AssociateTeamMember")}
                     if ($permissionActions.count -eq 2) {
                         if ($_.Resource | ? {($_ -eq "*") -or ($_ -eq "arn:aws:codestar:*:*:project/*")}) {
-                            $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "shadowCodeStar"
+                            $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "ShadowCodeStar"
                         }
                     }
                     #############################################################################################################################################################(31)
                     # Adding a malicious Lambda layer to an existing Lambda function
                     if ($_.Action | ? {($_ -eq "lambda:UpdateFunctionConfiguration")}) {
                         if ($_.Resource | ? {($_ -eq "*") -or ($_ -eq "arn:aws:codestar:*:*:function/*")}) {
-                            $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "shadowAddLambda"
+                            $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "ShadowAddLambda"
                         }
                     }
                     #############################################################################################################################################################(32)
                     # Gaining access to an existing SageMaker Jupyter notebook
                     if ($_.Action | ? {($_ -eq "sagemaker:CreatePresignedNotebookInstanceUrl")}) {
                         if ($_.Resource | ? {($_ -eq "*") -or ($_ -eq "arn:aws:codestar:*:*:notebook-instance/*")}) {
-                            $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "shadowSageMaker"
+                            $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "ShadowSageMaker"
                         }
                     }
                     #############################################################################################################################################################
@@ -951,10 +956,7 @@ function Write-Report {
     $awsAccount = (([string]$allPrivivlgedEntities[0]).Split(":"))[4]
     $shadowAdmins = $privilegedEntitiesDB | Where-Object {$_.PrivilegeType -like "*shadow*"} 
     $numShadowAdmins = $shadowAdmins.count
-    if (-not $numShadowAdmins) {
-        $numShadowAdmins = 0
-    }
-    else {
+    if ($numShadowAdmins -ge 1) {
          Write-host "-> Discovered $numShadowAdmins AWS Shadow Admins" -BackgroundColor DarkRed
     }
     $privilegedUsers = $privilegedEntitiesDB | Where-Object {$_.EntityType -eq "User"}
@@ -1079,10 +1081,8 @@ function Write-Report {
 
     $counter = 0
     $privilegedEntitiesDB | foreach {
-        if ($_.MFAenable -eq "NoMFA") {
-            $mfa = "no MFA"
-        }
-        else {
+        $mfa = "no MFA"
+        if ($_.MFAenable -eq $true) {
             $mfa = "MFA is enabled"
         }
         if ($_.policyCondition -like "*noCon*") {
