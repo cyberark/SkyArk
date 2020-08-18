@@ -69,6 +69,7 @@ try {
     if (-not $isAwsPowerShellModuleLoaded){
         Write-Host "[+] Searching for the AWS PowerShell module..."
     }
+    $AWSModule = Get-AWSPowerShellVersion
 }
 catch {
     try {
