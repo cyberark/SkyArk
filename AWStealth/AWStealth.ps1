@@ -957,7 +957,7 @@ function Write-Report {
     Write-host "-> AWStealth discovered $numAllPrivivlgedEntities privileged entities" -BackgroundColor DarkRed
     $awsAccount = (([string]$allPrivivlgedEntities[0]).Split(":"))[4]
     $shadowAdmins = $privilegedEntitiesDB | Where-Object {$_.PrivilegeType -like "*shadow*"} 
-    $numShadowAdmins = $shadowAdmins.count
+    $numShadowAdmins = $($shadowAdmins | Measure-Object).count
     if ($numShadowAdmins -ge 1) {
          Write-host "-> Discovered $numShadowAdmins AWS Shadow Admins" -BackgroundColor DarkRed
     }
