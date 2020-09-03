@@ -1021,7 +1021,7 @@ function Write-Report {
     $reportOutputArray.Add("#######################################################")
     $reportOutputArray.Add("")
     $reportOutputArray.Add("-> Number of privileged users without MFA protection: $numPrivilegedUserNoMFA")
-    $reportOutputArray.Add("-> Number of privileged users without constrained conditions: $numPrivilegedUsersNoCondition")
+    $reportOutputArray.Add("-> Number of privileged entities without constrained conditions: $numPrivilegedUsersNoCondition")
     $reportOutputArray.Add("")
     $reportOutputArray.Add("-> Number of unsecured users = no MFA and no constrained permission condition: $numPivielgedUsersNotSecured")
     if ($numPivielgedUsersNotSecured -gt 1) {
@@ -1130,8 +1130,9 @@ function Scan-AWShadowAdmins {
      
     $privilegedEntitiesDB = @{}
     $countEntities = @{}
-    $resultCSVpath = $PSScriptRoot + "\AWStealth - Results.csv"
-    $finalReportPath = $PSScriptRoot + "\AWStealth - Final Report.txt"
+    [string]$resultsTime = Get-Date -Format "yyyyMMdd"
+    $resultCSVpath = $PSScriptRoot + "\AWStealth - Results " + $resultsTime + ".csv"
+    $finalReportPath = $PSScriptRoot + "\AWStealth - Final Report " + $resultsTime + ".txt"
 
     # Load the AWS credentials
     $tempProfile = "AWStealthProfile"
