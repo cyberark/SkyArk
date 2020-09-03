@@ -836,7 +836,7 @@ function Scan-AzureAdmins {
     $tenantDict = @{}
     $subscriptionDict = @{}
     $roleDict = @{}
-    [string]$resultsTime = Get-Date -Format "yyyMMdd"
+    [string]$resultsTime = Get-Date -Format "yyyyMMdd"
 
     # Output to a result file all the information that was collected on all the AAD users
     if ($GetPrivilegedUserPhotos){
