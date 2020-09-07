@@ -24,6 +24,7 @@ Version 1.0 - 12.07.19 - published on GitHub as part of SkyArk tool:
 https://github.com/cyberark/SkyArk
 https://github.com/cyberark/SkyArk/tree/master/AzureStealth
 Version 1.1 - 01.09.19 - added two sensitive directory roles
+Version 1.2 - 07.09.20 - add support for CSP suscriptions
 
 ###########################################################################################
 
@@ -67,7 +68,7 @@ You can load and run the scan directly from GitHub, simply use the following Pow
 ###########################################################################################
 #>
 
-$AzureStealthVersion = "v1.1"
+$AzureStealthVersion = "v1.2"
 
 $AzureStealth = @"
 
@@ -357,8 +358,9 @@ function Add-PrivilegeAzureEntity {
         $rand  = $SubscriptionID + $PrivilegeReason
         $entityRand = [string]($entityDict[$entityId].ObjectId) + "-" + [string]$rand
     }
-
-    $privilegedAzEntitiesDict.add($entityRand,$entityLine)
+    if (-not $privilegedAzEntitiesDict.contains($entityRand)) {
+        $privilegedAzEntitiesDict.add($entityRand,$entityLine)
+    }
 }
 
 
@@ -553,7 +555,13 @@ function Run-SubscriptionScan {
         }
     }
     # Get the entities with the privileged RBAC roles
-    $subscriptionRoleAssignments = Get-AzRoleAssignment -IncludeClassicAdministrators
+    # handle the error case of "no classic admin could be queried" (if the subscription isn't legacy)
+    try {
+        $subscriptionRoleAssignments = Get-AzRoleAssignment -IncludeClassicAdministrators -ErrorAction Stop
+    }
+    catch {
+        $subscriptionRoleAssignments = Get-AzRoleAssignment
+    }
     # Check classic administrators:
     $subscriptionRoleAssignments | Where-Object {-not $_.RoleAssignmentId} | foreach {
         $PrivilegeReason = $_.RoleDefinitionName
@@ -587,27 +595,37 @@ function Run-SubscriptionScan {
                 $groupFromGroups = @()
                 Do {
                     if ($firstGroup) {
-                        $usersFromGroup = Get-AzureADGroupMember -ObjectId $_.ObjectId
+                        try {
+			    $usersFromGroup = Get-AzureADGroupMember -ObjectId $_.ObjectId
+			}
+			catch {
+			    Write-Verbose "Error with a specific group, maybe the Group is a foreign group and can't be queried"
+			}
                     }
                     else {
                         $usersFromGroup = $groupFromGroups | Get-AzureADGroupMember -ObjectId $_.ObjectId
                     }
                     $firstGroup = $false
                     $usersFromGroup = $usersFromGroup | where {$_.ObjectType -eq "User"}
-                    $groupFromGroups = $usersFromGroup | where {$_.ObjectType -eq "Group"}
-                    $newGroupCount = $groupFromGroups.count
-                    $ownersOfGroup = Get-AzureADGroupOwner -ObjectId $_.ObjectId
-
-                    $usersFromGroup | foreach {
+		    $usersFromGroup | foreach {
                         $rbacPrivilegedEntities += $_.ObjectId
                     }
-                    $ownersOfGroup | foreach {
-                        if (-not $entityDict.contains($_.ObjectId)){
-                            $AzEntityObject = Get-AzureADUser -ObjectId $_.ObjectId
-                            Add-EntityToDict -AzEntityObject $AzEntityObject
+                    $groupFromGroups = $usersFromGroup | where {$_.ObjectType -eq "Group"}
+                    $newGroupCount = $groupFromGroups.count
+                    $ownersOfGroup = @()
+		    try {
+		        $ownersOfGroup = Get-AzureADGroupOwner -ObjectId $_.ObjectId
+                        $ownersOfGroup | foreach {
+                            if (-not $entityDict.contains($_.ObjectId)){
+                                $AzEntityObject = Get-AzureADUser -ObjectId $_.ObjectId
+                                Add-EntityToDict -AzEntityObject $AzEntityObject
+                            }
+                            Add-PrivilegeAzureEntity -entityId $_.ObjectId -SubscriptionID $subscriptionId -PrivilegeReason "Privileged Group Owner" -RoleId $roleId -DirectoryTenantID $TenantId
                         }
-                        Add-PrivilegeAzureEntity -entityId $_.ObjectId -SubscriptionID $subscriptionId -PrivilegeReason "Privileged Group Owner" -RoleId $roleId -DirectoryTenantID $TenantId
-                    }
+		    }
+		    catch {
+		        Write-Verbose "Error with a specific group, maybe the Group is a foreign group and can't be queried"
+		    }
                 } While ($newGroupCount -ne 0)
             }
         }
