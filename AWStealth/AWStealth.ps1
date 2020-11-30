@@ -329,7 +329,7 @@ function Check-PrivilegedPolicy {
                     }
                     #############################################################################################################################################################(6)
                     # check for the sensitive "UpdateLoginProfile" permissions to other entities
-                    # example for a dangerous usage with AWS CLI: "aws iam update-login-profile --user-name ShadowTest --password Cyber123"
+                    # example for a dangerous usage with AWS CLI: "aws iam update-login-profile --user-name ShadowTest --password Password123!"
                     if ($_.Action | ? {($_ -eq "iam:UpdateLoginProfile")}) {
                         if ($_.Resource | ? {($_ -eq "*") -or ($_ -eq "arn:aws:iam::*:user/*")}) {
                             $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "ShadowUpdateLoginProfiles"
