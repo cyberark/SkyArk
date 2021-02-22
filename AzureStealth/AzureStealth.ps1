@@ -120,7 +120,7 @@ function Check-AzureModule {
     }
     try {
         $azModule = Get-InstalledModule -Name Az -ErrorAction Stop
-        if ($azModule){
+        if ($azModule) {
             Write-Host "`n  [+] Great, Azure `"AZ`" PowerShell Module exists`n"   
         }
     }
@@ -149,7 +149,7 @@ function Check-AzureModule {
     }
     try {
         $azModule = Get-InstalledModule -Name AzureAD -ErrorAction Stop
-        if ($azModule){
+        if ($azModule) {
             Write-Host "  [+] Great, Azure `"AzureAD`" PowerShell Module exists`n"
             $oneAzureModuleExist = $true  
         }
@@ -173,7 +173,7 @@ function Connect-AzureEnvironment {
     
     try {
         $answer = "n"
-        $AzContext = Get-AzContext  | Where-Object {($_.tenant) -or ($_.TenantId)}
+        $AzContext = Get-AzContext  | Where-Object { ($_.tenant) -or ($_.TenantId) }
         if ($AzContext.Account) {
             Write-Host "The current Azure account context is set for:"
             Write-Host ($AzContext | select  Name, Account, Environment | Format-List | Out-String)  -NoNewline
@@ -181,7 +181,7 @@ function Connect-AzureEnvironment {
         }
         if ($answer.ToLower() -notmatch "y") {
             $AzAllCachedContext = Get-AzContext -ListAvailable
-            $AzCachedContext = $AzAllCachedContext | Where-Object {($_.Tenant) -or ($_.TenantId)}
+            $AzCachedContext = $AzAllCachedContext | Where-Object { ($_.Tenant) -or ($_.TenantId) }
             if ($AzCachedContext) {
                 Write-Host "The follwoing Azure user/s are available through the cache:`n"
                 $counter = 0
@@ -190,7 +190,7 @@ function Connect-AzureEnvironment {
                     $contextAccount = $_.Account.id 
                     $contextName = $_.Name
                     $contextNameEx = "*" + $contextAccount + "*"
-                    if ($contextName -like $contextNameEx){
+                    if ($contextName -like $contextNameEx) {
                         Write-Host "$counter) Name: $contextName"
                     }
                     else {
@@ -240,12 +240,12 @@ function Connect-AzureEnvironment {
 function Connect-AzureActiveDirectory {
     [CmdletBinding()]
     param(
-    $AzContext
+        $AzContext
     )
     try {
         $tenantId = $AzContext.Tenant.Id
         $accountId = $AzContext.Account.Id
-        if ($tenantId){
+        if ($tenantId) {
             $AzAD = Connect-AzureAD -TenantId $tenantId -AccountId $accountId -ErrorAction Stop
         }
         else {
@@ -255,11 +255,11 @@ function Connect-AzureActiveDirectory {
         Write-Host "`n  [+] Connected to the Azure Active Directory: "$directoryName
     }
     catch {
-         Write-Host "`nCouldn't connect to the Azure Active Directory using the chosen user" -BackgroundColor red
-         Write-Host "Please try again... and use a valid Azure AD user" -BackgroundColor red
-         Write-Host "The tool will continue but it won't scan the Tenant Directory level (only subscriptions will be scanned)" -BackgroundColor red
-         Write-Host "You can also try different Azure user credentials or test the scan on a different environment"
-         return $false
+        Write-Host "`nCouldn't connect to the Azure Active Directory using the chosen user" -BackgroundColor red
+        Write-Host "Please try again... and use a valid Azure AD user" -BackgroundColor red
+        Write-Host "The tool will continue but it won't scan the Tenant Directory level (only subscriptions will be scanned)" -BackgroundColor red
+        Write-Host "You can also try different Azure user credentials or test the scan on a different environment"
+        return $false
     }   
     
     return $true
@@ -270,30 +270,30 @@ function Connect-AzureActiveDirectory {
 function Add-PrivilegeAzureEntity {
     [CmdletBinding()]
     param(
-    [string]
-    $entityId,
-    [string]
-    $DirectoryTenantID,
-    [string]
-    $SubscriptionID,
-    [string]
-    $RoleId,
-    [string]
-    $PrivilegeReason,
-    [string]
-    $ClassicSubscriptionAdminRole,
-    [string]
-    $scope,
-    [switch]
-    $ClassicAdmin
+        [string]
+        $entityId,
+        [string]
+        $DirectoryTenantID,
+        [string]
+        $SubscriptionID,
+        [string]
+        $RoleId,
+        [string]
+        $PrivilegeReason,
+        [string]
+        $ClassicSubscriptionAdminRole,
+        [string]
+        $scope,
+        [switch]
+        $ClassicAdmin
     )
 
-    $fullDirectoryAdmins = @("Application Administrator", "Authentication Administrator",`
-        "Password Administrator", "Privileged Authentication Administrator",`
-        "Cloud Application Administrator", "Helpdesk Administrator", "Privileged Role Administrator", "User Account Administrator")
-    $sensitiveDirectoryAdmins = @("SharePoint Service Administrator", "Exchange Service Administrator",`
-        "Conditional Access Administrator", "Security Administrator")
-    $subscriptionAdmins =  @("Owner","Contributor", "User Access Administrator")
+    $fullDirectoryAdmins = @("Application Administrator", "Authentication Administrator", `
+            "Password Administrator", "Privileged Authentication Administrator", `
+            "Cloud Application Administrator", "Helpdesk Administrator", "Privileged Role Administrator", "User Account Administrator")
+    $sensitiveDirectoryAdmins = @("SharePoint Service Administrator", "Exchange Service Administrator", `
+            "Conditional Access Administrator", "Security Administrator")
+    $subscriptionAdmins = @("Owner", "Contributor", "User Access Administrator")
     
     $RBACRoleAdminName = $roleDict[$RoleId].Name
     if ($ClassicAdmin) {
@@ -330,36 +330,36 @@ function Add-PrivilegeAzureEntity {
     }
 
     $entityLine = [PSCustomObject][ordered] @{
-        PrivilegeType        = [string]$PrivilegeType
-        EntityDisplayName    = [string]$entityDict[$entityId].DisplayName
-        EntityPrincipalName  = [string]$entityDict[$entityId].UserPrincipalName
-        EntityType           = [string]$entityDict[$entityId].ObjectType 
+        PrivilegeType            = [string]$PrivilegeType
+        EntityDisplayName        = [string]$entityDict[$entityId].DisplayName
+        EntityPrincipalName      = [string]$entityDict[$entityId].UserPrincipalName
+        EntityType               = [string]$entityDict[$entityId].ObjectType 
         DirectoryRoleAdminName   = [string]$roleDict[$RoleId].DisplayName  
         ClassicSubscriptionAdmin = [string]$ClassicAdministrator
         RBACRoleAdminName        = [string]$RBACRoleAdminName
-        SubscriptionName     = [string]$subscriptionDict[$SubscriptionID].Name
-        SubscriptionID       = [string]$SubscriptionID
-        SubscriptionStatus   = [string]$subscriptionDict[$SubscriptionID].State
-        TenantDisplayName    = [string]$tenantDict[$TenantId].DisplayName
-        TenantInitialName    = [string]$tenantDict[$TenantId].InitialDomainName
-        DirectoryTenantID    = [string]$DirectoryTenantID
-        EntityCreationDate   = [string]$EntityCreationDate
-        EntityId             = [string]$entityDict[$entityId].ObjectId
-        EntityHasPhoto       = [string]$entityDict[$entityId].EntityHasPhoto
-        UserEnabled          = [string]$entityDict[$entityId].AccountEnabled
-        OnPremisesSID        = [string]$entityDict[$entityId].OnPremisesSecurityIdentifier
-        RoleIsCustom         = [string]$customRole
-        RoleId               = [string]$RoleId        
+        SubscriptionName         = [string]$subscriptionDict[$SubscriptionID].Name
+        SubscriptionID           = [string]$SubscriptionID
+        SubscriptionStatus       = [string]$subscriptionDict[$SubscriptionID].State
+        TenantDisplayName        = [string]$tenantDict[$TenantId].DisplayName
+        TenantInitialName        = [string]$tenantDict[$TenantId].InitialDomainName
+        DirectoryTenantID        = [string]$DirectoryTenantID
+        EntityCreationDate       = [string]$EntityCreationDate
+        EntityId                 = [string]$entityDict[$entityId].ObjectId
+        EntityHasPhoto           = [string]$entityDict[$entityId].EntityHasPhoto
+        UserEnabled              = [string]$entityDict[$entityId].AccountEnabled
+        OnPremisesSID            = [string]$entityDict[$entityId].OnPremisesSecurityIdentifier
+        RoleIsCustom             = [string]$customRole
+        RoleId                   = [string]$RoleId        
     }
     if ($RoleId) {
         $entityRand = [string]($entityDict[$entityId].ObjectId) + "-" + [string]$RoleId
     }
     else {
-        $rand  = $SubscriptionID + $PrivilegeReason
+        $rand = $SubscriptionID + $PrivilegeReason
         $entityRand = [string]($entityDict[$entityId].ObjectId) + "-" + [string]$rand
     }
     if (-not $privilegedAzEntitiesDict.contains($entityRand)) {
-        $privilegedAzEntitiesDict.add($entityRand,$entityLine)
+        $privilegedAzEntitiesDict.add($entityRand, $entityLine)
     }
 }
 
@@ -373,12 +373,12 @@ function Add-EntityToDict {
         $externalUser
     )
 
-    if ($externalUser){
+    if ($externalUser) {
         $externalUserObject = [PSCustomObject][ordered] @{
-            DisplayName        = $AzEntityObject
-            UserPrincipalName  = $AzEntityObject
-            ObjectType         = "User"
-            ObjectId           = "ExternalUser-" + $AzEntityObject
+            DisplayName       = $AzEntityObject
+            UserPrincipalName = $AzEntityObject
+            ObjectType        = "User"
+            ObjectId          = "ExternalUser-" + $AzEntityObject
         }
         $entityDict.add($AzEntityObject, $externalUserObject)
     }
@@ -388,27 +388,27 @@ function Add-EntityToDict {
             $resultsFolder = $PSScriptRoot + "\Results-" + $resultsTime
             $usersPhotoFolder = $resultsFolder + "\PrivilegedUserPhotos"
             $entityHasPhoto = ""
-	        if ((-not $CloudShellMode) -and (-not $fullUserReconList)) {
-		        if ($AzEntityObject.ExtensionProperty."thumbnailPhoto@odata.mediaEditLink") {
-			        $entityHasPhoto = $true
-		            $resultsFolderExists = Test-Path -Path $resultsFolder
-		            if (-not $resultsFolderExists) {
-			            New-Item -ItemType directory -Path $resultsFolder > $null
-		            }
+            if ((-not $CloudShellMode) -and (-not $fullUserReconList)) {
+                if ($AzEntityObject.ExtensionProperty."thumbnailPhoto@odata.mediaEditLink") {
+                    $entityHasPhoto = $true
+                    $resultsFolderExists = Test-Path -Path $resultsFolder
+                    if (-not $resultsFolderExists) {
+                        New-Item -ItemType directory -Path $resultsFolder > $null
+                    }
                     $usersPhotoFolderExists = Test-Path -Path $usersPhotoFolder
-		            if (-not $usersPhotoFolderExists) {
-			            New-Item -ItemType directory -Path $usersPhotoFolder > $null
-		            }
-			        try {
-			            Get-AzureADUserThumbnailPhoto -ObjectId $EntityId -FilePath $usersPhotoFolder -ErrorAction SilentlyContinue > $null
-			            $entityHasPhoto = $true
-			        }
-			        catch {}
-		        }
+                    if (-not $usersPhotoFolderExists) {
+                        New-Item -ItemType directory -Path $usersPhotoFolder > $null
+                    }
+                    try {
+                        Get-AzureADUserThumbnailPhoto -ObjectId $EntityId -FilePath $usersPhotoFolder -ErrorAction SilentlyContinue > $null
+                        $entityHasPhoto = $true
+                    }
+                    catch {}
+                }
                 else {
                     $entityHasPhoto = $false
                 }
-	        }      
+            }      
             $AzEntityObject | Add-Member EntityHasPhoto $entityHasPhoto
             $entityDict.add($EntityId, $AzEntityObject)
         }
@@ -442,16 +442,16 @@ function Add-RoleToDict {
 function Check-DirectoryRolesEntities {
     [CmdletBinding()]
     param(
-    [string]
-    $direcotryRoleName
+        [string]
+        $directoryRoleName
     )    
-    $role = Get-AzureADDirectoryRole | Where-Object {$_.displayName -eq $direcotryRoleName}
+    $role = Get-AzureADDirectoryRole | Where-Object { $_.displayName -eq $directoryRoleName }
     if ($role) {
         Add-RoleToDict -RoleObject $role
         $globalAdminDB = Get-AzureADDirectoryRoleMember -ObjectId $role.ObjectId | Get-AzureADUser
         $globalAdminDB | foreach {
             Add-EntityToDict -AzEntityObject $_
-            Add-PrivilegeAzureEntity -entityId $_.ObjectId -DirectoryTenantID $TenantId -PrivilegeReason $direcotryRoleName -RoleId $role.ObjectId
+            Add-PrivilegeAzureEntity -entityId $_.ObjectId -DirectoryTenantID $TenantId -PrivilegeReason $directoryRoleName -RoleId $role.ObjectId
         }
     }
 }
@@ -471,11 +471,11 @@ function Run-TenantScan {
 
     $tenantObject = Get-AzureADTenantDetail
     if (-not $tenantDict.contains($TenantId)) {      
-        $initialDomainName = $tenantObject.VerifiedDomains | Where-Object {$_.Initial} | select Name
+        $initialDomainName = $tenantObject.VerifiedDomains | Where-Object { $_.Initial } | select Name
         $tenantObject | Add-Member "InitialDomainName" $initialDomainName.Name
         $tenantDict.add($TenantId, $tenantObject)
     }
-    if ($fullUserReconList){
+    if ($fullUserReconList) {
         $usersLimit = 200000
         $allUsers = Get-AzureADUser -Top $usersLimit
         $allUsersNumber = $allUsers.count
@@ -493,16 +493,16 @@ function Run-TenantScan {
     6.	Privileged Role Administrator - Users with this role can manage role assignments in Azure Active Directory.
     7.	User Account Administrator - Can manage all aspects of users and groups, including resetting passwords for limited admins.
     #>
-    $privilegedDirectoryRoles = @("Company Administrator","Application Administrator", "Authentication Administrator",`
-        "Password Administrator", "Privileged Authentication Administrator", "Cloud Application Administrator",`
-        "Helpdesk Administrator", "Privileged Role Administrator", "User Account Administrator")
-    $sensitiveDirectoryRoles = @("SharePoint Service Administrator", "Exchange Service Administrator","Conditional Access Administrator", "Security Administrator")
+    $privilegedDirectoryRoles = @("Company Administrator", "Application Administrator", "Authentication Administrator", `
+            "Password Administrator", "Privileged Authentication Administrator", "Cloud Application Administrator", `
+            "Helpdesk Administrator", "Privileged Role Administrator", "User Account Administrator")
+    $sensitiveDirectoryRoles = @("SharePoint Service Administrator", "Exchange Service Administrator", "Conditional Access Administrator", "Security Administrator")
 
     $privilegedDirectoryRoles | foreach {
-        Check-DirectoryRolesEntities -direcotryRoleName $_
+        Check-DirectoryRolesEntities -directoryRoleName $_
     }
     $sensitiveDirectoryRoles | foreach {
-        Check-DirectoryRolesEntities -direcotryRoleName $_
+        Check-DirectoryRolesEntities -directoryRoleName $_
     }
 }
 
@@ -511,8 +511,8 @@ function Run-TenantScan {
 function Run-SubscriptionScan {
     [CmdletBinding()]
     param(
-    [string]
-    $subscriptionId
+        [string]
+        $subscriptionId
     )
 
     if (-not $subscriptionDict.contains($subscriptionId)) {      
@@ -526,12 +526,12 @@ function Run-SubscriptionScan {
 	2. Contributor
 	3. User Access Administrator
     #>
-    $privilegedSubscriptionRoles = @("Owner","Contributor", "User Access Administrator")
-    $privilegedRBACPermissions = @("Microsoft.Authorization/*","Microsoft.Authorization/*/Write",`
-    "Microsoft.Authorization/roleAssignments/*", "Microsoft.Authorization/roleDefinition/*",`
-    "Microsoft.Authorization/roleDefinitions/*", "Microsoft.Authorization/elevateAccess/Action",`
-    "Microsoft.Authorization/roleDefinition/write", "Microsoft.Authorization/roleDefinitions/write",`
-    "Microsoft.Authorization/roleAssignments/write","Microsoft.Authorization/classicAdministrators/write")
+    $privilegedSubscriptionRoles = @("Owner", "Contributor", "User Access Administrator")
+    $privilegedRBACPermissions = @("Microsoft.Authorization/*", "Microsoft.Authorization/*/Write", `
+            "Microsoft.Authorization/roleAssignments/*", "Microsoft.Authorization/roleDefinition/*", `
+            "Microsoft.Authorization/roleDefinitions/*", "Microsoft.Authorization/elevateAccess/Action", `
+            "Microsoft.Authorization/roleDefinition/write", "Microsoft.Authorization/roleDefinitions/write", `
+            "Microsoft.Authorization/roleAssignments/write", "Microsoft.Authorization/classicAdministrators/write")
 
     $privilegedRbacRoles = @()
     $allRbacRoles = Get-AzRoleDefinition
@@ -563,7 +563,7 @@ function Run-SubscriptionScan {
         $subscriptionRoleAssignments = Get-AzRoleAssignment
     }
     # Check classic administrators:
-    $subscriptionRoleAssignments | Where-Object {-not $_.RoleAssignmentId} | foreach {
+    $subscriptionRoleAssignments | Where-Object { -not $_.RoleAssignmentId } | foreach {
         $PrivilegeReason = $_.RoleDefinitionName
         $userPrincipalName = $_.SignInName
         $AzEntityObject = Get-AzureADUser -Filter "userPrincipalName eq '$userPrincipalName'"
@@ -573,14 +573,14 @@ function Run-SubscriptionScan {
             Add-PrivilegeAzureEntity -entityId $userPrincipalName -SubscriptionID $subscriptionId -PrivilegeReason $PrivilegeReason -DirectoryTenantID $TenantId -ClassicAdmin #-RoleId $role.ObjectId 
         }
         else {
-            if (-not $entityDict.contains($AzEntityObject.ObjectId)){
+            if (-not $entityDict.contains($AzEntityObject.ObjectId)) {
                 Add-EntityToDict -AzEntityObject $AzEntityObject
             }
             Add-PrivilegeAzureEntity -entityId $AzEntityObject.ObjectId -SubscriptionID $subscriptionId -PrivilegeReason $PrivilegeReason -DirectoryTenantID $TenantId -ClassicAdmin #-RoleId $role.ObjectId 
         }
     }
     # Check for privileged RBAC roles
-    $subscriptionRoleAssignments | Where-Object {$privilegedRbacRoles.Id -contains $_.RoleDefinitionId} | foreach {
+    $subscriptionRoleAssignments | Where-Object { $privilegedRbacRoles.Id -contains $_.RoleDefinitionId } | foreach {
         $rbacPrivilegedEntities = @()
         $PrivilegeReason = $_.RoleDefinitionName
         $roleId = $_.RoleDefinitionId
@@ -596,42 +596,42 @@ function Run-SubscriptionScan {
                 Do {
                     if ($firstGroup) {
                         try {
-			    $usersFromGroup = Get-AzureADGroupMember -ObjectId $_.ObjectId
-			}
-			catch {
-			    Write-Verbose "Error with a specific group, maybe the Group is a foreign group and can't be queried"
-			}
+                            $usersFromGroup = Get-AzureADGroupMember -ObjectId $_.ObjectId
+                        }
+                        catch {
+                            Write-Verbose "Error with a specific group, maybe the Group is a foreign group and can't be queried"
+                        }
                     }
                     else {
                         $usersFromGroup = $groupFromGroups | Get-AzureADGroupMember -ObjectId $_.ObjectId
                     }
                     $firstGroup = $false
-                    $usersFromGroup = $usersFromGroup | where {$_.ObjectType -eq "User"}
-		    $usersFromGroup | foreach {
+                    $usersFromGroup = $usersFromGroup | where { $_.ObjectType -eq "User" }
+                    $usersFromGroup | foreach {
                         $rbacPrivilegedEntities += $_.ObjectId
                     }
-                    $groupFromGroups = $usersFromGroup | where {$_.ObjectType -eq "Group"}
+                    $groupFromGroups = $usersFromGroup | where { $_.ObjectType -eq "Group" }
                     $newGroupCount = $groupFromGroups.count
                     $ownersOfGroup = @()
-		    try {
-		        $ownersOfGroup = Get-AzureADGroupOwner -ObjectId $_.ObjectId
+                    try {
+                        $ownersOfGroup = Get-AzureADGroupOwner -ObjectId $_.ObjectId
                         $ownersOfGroup | foreach {
-                            if (-not $entityDict.contains($_.ObjectId)){
+                            if (-not $entityDict.contains($_.ObjectId)) {
                                 $AzEntityObject = Get-AzureADUser -ObjectId $_.ObjectId
                                 Add-EntityToDict -AzEntityObject $AzEntityObject
                             }
                             Add-PrivilegeAzureEntity -entityId $_.ObjectId -SubscriptionID $subscriptionId -PrivilegeReason "Privileged Group Owner" -RoleId $roleId -DirectoryTenantID $TenantId
                         }
-		    }
-		    catch {
-		        Write-Verbose "Error with a specific group, maybe the Group is a foreign group and can't be queried"
-		    }
+                    }
+                    catch {
+                        Write-Verbose "Error with a specific group, maybe the Group is a foreign group and can't be queried"
+                    }
                 } While ($newGroupCount -ne 0)
             }
         }
     
         $rbacPrivilegedEntities | foreach {
-            if (-not $entityDict.contains($_)){
+            if (-not $entityDict.contains($_)) {
                 $AzEntityObject = Get-AzureADUser -ObjectId $_
                 Add-EntityToDict -AzEntityObject $AzEntityObject
             }
@@ -644,10 +644,10 @@ function Run-SubscriptionScan {
 # Building the results file
 function Write-AzureReconInfo {
     param(
-    [string]
-    $ResultsFolder,
-    [switch]
-    $CloudShellMode
+        [string]
+        $ResultsFolder,
+        [switch]
+        $CloudShellMode
     )
     if ($CloudShellMode) {
         $usersInfoPath = $resultsFolder + "/AzureUsers-Info.csv"
@@ -663,44 +663,44 @@ function Write-AzureReconInfo {
 
     $entityDict.Values | foreach {
         $entityReconLine = [PSCustomObject][ordered] @{
-                UserPrincipalName          = [string]$_.UserPrincipalName
-                DisplayName                = [string]$_.DisplayName
-                ObjectType                 = [string]$_.ObjectType
-                UserType                   = [string]$_.UserType
-                AccountEnabled             = [string]$_.AccountEnabled
-                JobTitle                   = [string]$_.JobTitle
-                Department                 = [string]$_.Department
-                Mail                       = [string]$_.Mail
-                Mobile                     = [string]$_.Mobile
-                TelephoneNumber            = [string]$_.TelephoneNumber
-                PreferredLanguage          = [string]$_.PreferredLanguage
-                MailNickName               = [string]$_.MailNickName
-                GivenName                  = [string]$_.GivenName
-                Surname                    = [string]$_.Surname
-                EntityHasMailPhoto         = [string]$_.EntityHasPhoto
-                CreatedDateTime            = [string]$_.ExtensionProperty.createdDateTime
-                OnPremisesSecurityIdentifier = [string]$_.OnPremisesSecurityIdentifier
-                DirSyncEnabled             = [string]$_.DirSyncEnabled
-                LastDirSyncTime            = [string]$_.LastDirSyncTime
-                RefreshTokensValidFromDateTime = [string]$_.RefreshTokensValidFromDateTime
-                UsageLocation              = [string]$_.UsageLocation
-                CompanyName                = [string]$_.CompanyName
-                Country                    = [string]$_.Country
-                State                      = [string]$_.State
-                City                       = [string]$_.City
-                StreetAddress              = [string]$_.StreetAddress
-                PostalCode                 = [string]$_.PostalCode
-                PhysicalDeliveryOfficeName = [string]$_.PhysicalDeliveryOfficeName
-                FacsimileTelephoneNumber   = [string]$_.FacsimileTelephoneNumber
-                IsCompromised              = [string]$_.IsCompromised
-                ImmutableId                = [string]$_.ImmutableId
-                CreationType               = [string]$_.CreationType
-                PasswordPolicies           = [string]$_.PasswordPolicies
-                PasswordProfile            = [string]$_.PasswordProfile
-                ShowInAddressList          = [string]$_.ShowInAddressList
-                SipProxyAddress            = [string]$_.SipProxyAddress
-                DeletionTimestamp          = [string]$_.DeletionTimestamp
-                ObjectId                   = [string]$_.ObjectId
+            UserPrincipalName              = [string]$_.UserPrincipalName
+            DisplayName                    = [string]$_.DisplayName
+            ObjectType                     = [string]$_.ObjectType
+            UserType                       = [string]$_.UserType
+            AccountEnabled                 = [string]$_.AccountEnabled
+            JobTitle                       = [string]$_.JobTitle
+            Department                     = [string]$_.Department
+            Mail                           = [string]$_.Mail
+            Mobile                         = [string]$_.Mobile
+            TelephoneNumber                = [string]$_.TelephoneNumber
+            PreferredLanguage              = [string]$_.PreferredLanguage
+            MailNickName                   = [string]$_.MailNickName
+            GivenName                      = [string]$_.GivenName
+            Surname                        = [string]$_.Surname
+            EntityHasMailPhoto             = [string]$_.EntityHasPhoto
+            CreatedDateTime                = [string]$_.ExtensionProperty.createdDateTime
+            OnPremisesSecurityIdentifier   = [string]$_.OnPremisesSecurityIdentifier
+            DirSyncEnabled                 = [string]$_.DirSyncEnabled
+            LastDirSyncTime                = [string]$_.LastDirSyncTime
+            RefreshTokensValidFromDateTime = [string]$_.RefreshTokensValidFromDateTime
+            UsageLocation                  = [string]$_.UsageLocation
+            CompanyName                    = [string]$_.CompanyName
+            Country                        = [string]$_.Country
+            State                          = [string]$_.State
+            City                           = [string]$_.City
+            StreetAddress                  = [string]$_.StreetAddress
+            PostalCode                     = [string]$_.PostalCode
+            PhysicalDeliveryOfficeName     = [string]$_.PhysicalDeliveryOfficeName
+            FacsimileTelephoneNumber       = [string]$_.FacsimileTelephoneNumber
+            IsCompromised                  = [string]$_.IsCompromised
+            ImmutableId                    = [string]$_.ImmutableId
+            CreationType                   = [string]$_.CreationType
+            PasswordPolicies               = [string]$_.PasswordPolicies
+            PasswordProfile                = [string]$_.PasswordProfile
+            ShowInAddressList              = [string]$_.ShowInAddressList
+            SipProxyAddress                = [string]$_.SipProxyAddress
+            DeletionTimestamp              = [string]$_.DeletionTimestamp
+            ObjectId                       = [string]$_.ObjectId
         }       
         $entityReconOutput += $entityReconLine
     }
@@ -709,28 +709,28 @@ function Write-AzureReconInfo {
     $tenantReconOutput = @()
     $tenantDict.Values | foreach {
         $tenantReconLine = [PSCustomObject][ordered] @{
-                InitialDomainName      = [string]$_.InitialDomainName
-                DisplayName            = [string]$_.DisplayName
-                ObjectType             = [string]$_.ObjectType
-                DirSyncEnabled         = [string]$_.DirSyncEnabled
-                CompanyLastDirSyncTime = [string]$_.CompanyLastDirSyncTime
-                Country                = [string]$_.Country
-                CountryLetterCode      = [string]$_.CountryLetterCode
-                PreferredLanguage      = [string]$_.PreferredLanguage
-                State                  = [string]$_.State
-                City                   = [string]$_.City
-                PostalCode             = [string]$_.PostalCode
-                Street                 = [string]$_.Street
-                TelephoneNumber        = [string]$_.TelephoneNumber
-                MarketingNotificationEmails = [string]$_.MarketingNotificationEmails
-                TechnicalNotificationMails  = [string]$_.TechnicalNotificationMails
-                SecurityComplianceNotificationMails   = [string]$_.SecurityComplianceNotificationMails
-                SecurityComplianceNotificationPhones  = [string]$_.SecurityComplianceNotificationPhones
-                AssignedPlans          = [string]$_.AssignedPlans
-                ProvisionedPlans       = [string]$_.ProvisionedPlans
-                ProvisioningErrors     = [string]$_.ProvisioningErrors
-                DeletionTimestamp      = [string]$_.DeletionTimestamp
-                ObjectId               = [string]$_.ObjectId
+            InitialDomainName                    = [string]$_.InitialDomainName
+            DisplayName                          = [string]$_.DisplayName
+            ObjectType                           = [string]$_.ObjectType
+            DirSyncEnabled                       = [string]$_.DirSyncEnabled
+            CompanyLastDirSyncTime               = [string]$_.CompanyLastDirSyncTime
+            Country                              = [string]$_.Country
+            CountryLetterCode                    = [string]$_.CountryLetterCode
+            PreferredLanguage                    = [string]$_.PreferredLanguage
+            State                                = [string]$_.State
+            City                                 = [string]$_.City
+            PostalCode                           = [string]$_.PostalCode
+            Street                               = [string]$_.Street
+            TelephoneNumber                      = [string]$_.TelephoneNumber
+            MarketingNotificationEmails          = [string]$_.MarketingNotificationEmails
+            TechnicalNotificationMails           = [string]$_.TechnicalNotificationMails
+            SecurityComplianceNotificationMails  = [string]$_.SecurityComplianceNotificationMails
+            SecurityComplianceNotificationPhones = [string]$_.SecurityComplianceNotificationPhones
+            AssignedPlans                        = [string]$_.AssignedPlans
+            ProvisionedPlans                     = [string]$_.ProvisionedPlans
+            ProvisioningErrors                   = [string]$_.ProvisioningErrors
+            DeletionTimestamp                    = [string]$_.DeletionTimestamp
+            ObjectId                             = [string]$_.ObjectId
         }       
         $tenantReconOutput += $tenantReconLine
     }
@@ -742,8 +742,8 @@ function Write-AzureReconInfo {
 function Write-AzureStealthResults {
     [CmdletBinding()]
     param(
-    [switch]
-    $CloudShellMode
+        [switch]
+        $CloudShellMode
     )
 
     $azureAdminsResults = $privilegedAzEntitiesDict.Values | Sort-Object -Descending EntityType | Sort-Object PrivilegeType, EntityDisplayName, RoleId
@@ -754,10 +754,10 @@ function Write-AzureStealthResults {
 
     if (-not $cloudShellMode) {
         $resultsFolder = $PSScriptRoot + "\Results-" + $resultsTime
-	$resultsFolderExists = Test-Path -Path $resultsFolder
-	if (-not $resultsFolderExists) {
-	    New-Item -ItemType directory -Path $resultsFolder > $null
-	}
+        $resultsFolderExists = Test-Path -Path $resultsFolder
+        if (-not $resultsFolderExists) {
+            New-Item -ItemType directory -Path $resultsFolder > $null
+        }
         $mainResultsPath = $resultsFolder + "\AzureStealth-Results.csv"
         $azureAdminsResults | Export-Csv -path $mainResultsPath -NoTypeInformation
         Write-AzureReconInfo -ResultsFolder $resultsFolder
@@ -765,29 +765,29 @@ function Write-AzureStealthResults {
         Write-Host "`n      To get the results files - go to the results folder - in the following location:`n      `"$resultsFolder`""
         # In addition, present the results in an automated gridview using Out-GridView
         $resultsForGridView = @()
-        $azureAdminsResults | foreach {$resultsForGridView += $_}
+        $azureAdminsResults | foreach { $resultsForGridView += $_ }
         $resultsForGridView | Out-GridView -Title "AzureStealth Results"
     }
     else {
-	$cloudDriveInfo = Get-CloudDrive
-	$localCloudShellPath = $cloudDriveInfo.MountPoint
+        $cloudDriveInfo = Get-CloudDrive
+        $localCloudShellPath = $cloudDriveInfo.MountPoint
         $resultsFolder = $localCloudShellPath + "/AzureStealth/Results-" + $resultsTime
         $resultsFolderExists = Test-Path -Path $resultsFolder
         if (-not $resultsFolderExists) {
-	    New-Item -ItemType directory -Path $resultsFolder > $null
-	}
+            New-Item -ItemType directory -Path $resultsFolder > $null
+        }
         $resultCSVpath = $resultsFolder + "/AzureStealthScan-Results.csv"
         $azureAdminsResults | Export-Csv -path $resultCSVpath -NoTypeInformation
-	Write-AzureReconInfo -ResultsFolder $resultsFolder -CloudShellMode
-        $resultsZipPath = $localCloudShellPath + "/AzureStealth/Results-" + $resultsTime +".zip"
+        Write-AzureReconInfo -ResultsFolder $resultsFolder -CloudShellMode
+        $resultsZipPath = $localCloudShellPath + "/AzureStealth/Results-" + $resultsTime + ".zip"
         Compress-Archive -Path $resultsFolder -CompressionLevel Optimal -DestinationPath $resultsZipPath -Update
         Export-File -Path $resultsZipPath
-	$storageName = $cloudDriveInfo.Name
-	$fileShareName = $cloudDriveInfo.FileShareName
+        $storageName = $cloudDriveInfo.Name
+        $fileShareName = $cloudDriveInfo.FileShareName
         Write-Host "`n  [+] Completed the scan - the results zip file was created and available at:`n      $resultsZipPath`n"
         Write-Host "`n  [+] You can also use the Azure Portal to view the results files:"
         Write-Host "      Go to => `"The Storage Accounts' main view`" => `"$storageName`" => `"Files view`""
-	Write-Host "      Choose the File Share: `"$fileShareName`""
+        Write-Host "      Choose the File Share: `"$fileShareName`""
         Write-Host "      In this File Share:"
         Write-Host "      Open the folders => `"AzureStealth`" and `"Results-"$resultsTime"`"`n"
     }
@@ -798,18 +798,18 @@ function Write-AzureStealthResults {
 function Scan-AzureAdmins {
     [CmdletBinding()]
     param(
-    [switch]
-    $UseCurrentCred,
-    [switch]
-    $GetPrivilegedUserPhotos
+        [switch]
+        $UseCurrentCred,
+        [switch]
+        $GetPrivilegedUserPhotos
     )
 
     $CloudShellMode = $false
     try {
         $cloudShellRun = Get-CloudDrive
-	if ($cloudShellRun){
+        if ($cloudShellRun) {
             $CloudShellMode = $true
-	}
+        }
     }
     catch {
         $CloudShellMode = $false
@@ -844,7 +844,7 @@ function Scan-AzureAdmins {
         $AzConnection = Connect-AzureActiveDirectory -AzContext $currentAzContext 
     }
     if ($AzConnection -eq $false) {
-        $scanTheDirecotry = $false
+        $scanTheDirectory = $false
         Write-host "Couldn't connect to the target Directory, the scan will continue but there might be errors" -ForegroundColor Yellow
     }
 
@@ -857,7 +857,7 @@ function Scan-AzureAdmins {
     [string]$resultsTime = Get-Date -Format "yyyyMMdd"
 
     # Output to a result file all the information that was collected on all the AAD users
-    if ($GetPrivilegedUserPhotos){
+    if ($GetPrivilegedUserPhotos) {
         $fullUserReconList = $false
     }
     else {
@@ -889,7 +889,7 @@ function Scan-AzureAdmins {
     }
 
     # Scan all the available tenant\s
-    $tenantList| foreach {
+    $tenantList | foreach {
         Write-Host "  [+] Scanning tenant ID: "$_.Id
         Set-AzContext -Tenant $_.id > $null
         $usedUser = Get-AzADUser -UserPrincipalName $currentAzContext.Account
@@ -906,10 +906,10 @@ function Scan-AzureAdmins {
     Write-Host "`n  [+] Working on the results files"
 
     if ($CloudShellMode) {
-    	Write-AzureStealthResults -CloudShellMode
+        Write-AzureStealthResults -CloudShellMode
     }
     else {
-    	Write-AzureStealthResults
+        Write-AzureStealthResults
     }    
     if ($AzContextAutosave -eq "None") {
         Disable-AzContextAutosave
