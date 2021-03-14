@@ -25,7 +25,7 @@ https://www.youtube.com/watch?v=mK62I1BNmXs
   
 About a year later, we added the AzureStealth scan to SkyArk for mitigating the **Shadow Admins threat in Azure!** 
 Our research on Azure Shadow Admins threat was presented at RSA USA 2020 and Hackfest conferences.
-DIY: Hunting Azure Shadow Admins Like Never Before - blog post: 
+DIY: Hunting Azure Shadow Admins Like Never Before - blog post:  
 https://www.cyberark.com/resources/threat-research-blog/diy-hunting-azure-shadow-admins-like-never-before-2  
   
 # Tool Description
@@ -96,13 +96,13 @@ Asaf Hecht ([@Hechtov](https://twitter.com/Hechtov)) and CyberArk Labs
   
 **More coverage on the uprising Cloud Shadow Admins threat:**  
   
-On the threat in AWS:
+On the threat in AWS:  
 ThreatPost: https://threatpost.com/cloud-credentials-new-attack-surface-for-old-problem/131304/  
 TechTarget\SearchCloudSecurity: https://searchcloudsecurity.techtarget.com/news/252439753/CyberArk-warns-of-shadow-admins-in-cloud-environments  
 SecurityBoulevard: https://securityboulevard.com/2018/05/cyberark-shows-how-shadow-admins-can-be-created-in-cloud-environments/  
 LastWatchDog: https://www.lastwatchdog.com/cyberark-shows-how-shadow-admins-can-be-created-in-cloud-environments/  
 Byron Acohido's Podcast: https://soundcloud.com/byron-acohido/cloud-privileged-accounts-flaws-exposed  
-On the threat in Azure:
+On the threat in Azure:  
 https://www.zdnet.com/article/new-tool-detects-shadow-admin-accounts-in-aws-and-azure-environments/
 https://securityinfive.com/episode-797-new-tool-helps-you-find-shadow-admin-account-in-aws-and-azure/
 https://awsinsider.net/articles/2020/07/29/aws-azure-shadow-admin.aspx
