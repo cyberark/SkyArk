@@ -17,13 +17,16 @@ Stealthy and undercover cloud admins may reside in every public cloud platform a
 SkyArk deals with the new uprising threat of Cloud Shadow Admins - how attackers can find and abuse non-trivial and so-called “limited” permissions to still make it through and escalate their privileges and become full cloud admins.  
 Furthermore, attackers can easily use those tricky specific permissions to hide stealthy admin entities that will wait for them as an undercover persistence technique.  
   
-SkyArk was initially published as part of our research on the threat of AWS Shadow Admins, this research was presented at RSA USA 2018 conference.  
+SkyArk was initially published as part of our research on the threat of **AWS Shadow Admins**, this research was presented at RSA USA 2018 conference.  
 The AWS Shadow Admins blog post:  
 https://www.cyberark.com/threat-research-blog/cloud-shadow-admin-threat-10-permissions-protect/  
 The recording of the RSA talk:  
-https://www.rsaconference.com/videos/sneak-your-way-to-cloud-persistenceshadow-admins-are-here-to-stay  
+https://www.youtube.com/watch?v=mK62I1BNmXs   
   
-About a year later, we added the AzureStealth scan to SkyArk for mitigating the Shadow Admins threat in Azure!  
+About a year later, we added the AzureStealth scan to SkyArk for mitigating the **Shadow Admins threat in Azure!** 
+Our research on Azure Shadow Admins threat was presented at RSA USA 2020 and Hackfest conferences.
+DIY: Hunting Azure Shadow Admins Like Never Before - blog post: 
+https://www.cyberark.com/resources/threat-research-blog/diy-hunting-azure-shadow-admins-like-never-before-2  
   
 # Tool Description
 SkyArk currently contains two main scanning modules **AWStealth** and **AzureStealth**.  
@@ -93,8 +96,15 @@ Asaf Hecht ([@Hechtov](https://twitter.com/Hechtov)) and CyberArk Labs
   
 **More coverage on the uprising Cloud Shadow Admins threat:**  
   
+On the threat in AWS:
 ThreatPost: https://threatpost.com/cloud-credentials-new-attack-surface-for-old-problem/131304/  
 TechTarget\SearchCloudSecurity: https://searchcloudsecurity.techtarget.com/news/252439753/CyberArk-warns-of-shadow-admins-in-cloud-environments  
 SecurityBoulevard: https://securityboulevard.com/2018/05/cyberark-shows-how-shadow-admins-can-be-created-in-cloud-environments/  
 LastWatchDog: https://www.lastwatchdog.com/cyberark-shows-how-shadow-admins-can-be-created-in-cloud-environments/  
 Byron Acohido's Podcast: https://soundcloud.com/byron-acohido/cloud-privileged-accounts-flaws-exposed  
+On the threat in Azure:
+https://www.zdnet.com/article/new-tool-detects-shadow-admin-accounts-in-aws-and-azure-environments/
+https://securityinfive.com/episode-797-new-tool-helps-you-find-shadow-admin-account-in-aws-and-azure/
+https://awsinsider.net/articles/2020/07/29/aws-azure-shadow-admin.aspx
+https://siliconangle.com/2020/07/29/cyberark-launches-open-source-shadow-admin-identification-tool-azure-aws/
+https://itsecuritywire.com/quick-bytes/cyberark-introduces-shadow-admin-identification-tool-for-azure-and-aws/
