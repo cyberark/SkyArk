@@ -443,15 +443,15 @@ function Check-DirectoryRolesEntities {
     [CmdletBinding()]
     param(
     [string]
-    $direcotryRoleName
+    $directoryRoleName
     )    
-    $role = Get-AzureADDirectoryRole | Where-Object {$_.displayName -eq $direcotryRoleName}
+    $role = Get-AzureADDirectoryRole | Where-Object {$_.displayName -eq $directoryRoleName}
     if ($role) {
         Add-RoleToDict -RoleObject $role
         $globalAdminDB = Get-AzureADDirectoryRoleMember -ObjectId $role.ObjectId | Get-AzureADUser
         $globalAdminDB | foreach {
             Add-EntityToDict -AzEntityObject $_
-            Add-PrivilegeAzureEntity -entityId $_.ObjectId -DirectoryTenantID $TenantId -PrivilegeReason $direcotryRoleName -RoleId $role.ObjectId
+            Add-PrivilegeAzureEntity -entityId $_.ObjectId -DirectoryTenantID $TenantId -PrivilegeReason $directoryRoleName -RoleId $role.ObjectId
         }
     }
 }
@@ -499,10 +499,10 @@ function Run-TenantScan {
     $sensitiveDirectoryRoles = @("SharePoint Service Administrator", "Exchange Service Administrator","Conditional Access Administrator", "Security Administrator")
 
     $privilegedDirectoryRoles | foreach {
-        Check-DirectoryRolesEntities -direcotryRoleName $_
+        Check-DirectoryRolesEntities -directoryRoleName $_
     }
     $sensitiveDirectoryRoles | foreach {
-        Check-DirectoryRolesEntities -direcotryRoleName $_
+        Check-DirectoryRolesEntities -directoryRoleName $_
     }
 }
 
@@ -844,7 +844,7 @@ function Scan-AzureAdmins {
         $AzConnection = Connect-AzureActiveDirectory -AzContext $currentAzContext 
     }
     if ($AzConnection -eq $false) {
-        $scanTheDirecotry = $false
+        $scanTheDirectory = $false
         Write-host "Couldn't connect to the target Directory, the scan will continue but there might be errors" -ForegroundColor Yellow
     }
 
