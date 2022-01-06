@@ -285,7 +285,12 @@ function Add-PrivilegeAzureEntity {
     [string]
     $scope,
     [switch]
-    $ClassicAdmin
+    $ClassicAdmin,
+    [switch]
+    $GroupPrivilege,
+    [string]
+    $PrivilegeGroup
+
     )
 
     $fullDirectoryAdmins = @("Application Administrator", "Authentication Administrator",`
@@ -329,6 +334,13 @@ function Add-PrivilegeAzureEntity {
         $customRole = $True
     }
 
+    If($GroupPrivilege){
+
+        $Assignment = $PrivilegeGroup
+    }else{
+        $Assignment = 'DirectAssignment'
+    }
+
     $entityLine = [PSCustomObject][ordered] @{
         PrivilegeType        = [string]$PrivilegeType
         EntityDisplayName    = [string]$entityDict[$entityId].DisplayName
@@ -349,7 +361,8 @@ function Add-PrivilegeAzureEntity {
         UserEnabled          = [string]$entityDict[$entityId].AccountEnabled
         OnPremisesSID        = [string]$entityDict[$entityId].OnPremisesSecurityIdentifier
         RoleIsCustom         = [string]$customRole
-        RoleId               = [string]$RoleId        
+        RoleId               = [string]$RoleId 
+        Assignment           = [string]$Assignment       
     }
     if ($RoleId) {
         $entityRand = [string]($entityDict[$entityId].ObjectId) + "-" + [string]$RoleId
@@ -370,7 +383,9 @@ function Add-EntityToDict {
     param(
         $AzEntityObject,
         [switch]
-        $externalUser
+        $externalUser,
+        [switch]
+        $NestedInGroup
     )
 
     if ($externalUser){
@@ -512,7 +527,12 @@ function Run-SubscriptionScan {
     [CmdletBinding()]
     param(
     [string]
-    $subscriptionId
+    $subscriptionId,
+    [bool]
+    $AllRoles = $false,
+    [bool]
+    $AllScopes = $false
+
     )
 
     if (-not $subscriptionDict.contains($subscriptionId)) {      
@@ -535,21 +555,32 @@ function Run-SubscriptionScan {
 
     $privilegedRbacRoles = @()
     $allRbacRoles = Get-AzRoleDefinition
-    $allRbacRoles | foreach {
-        # If this is a built-in RBAC role
-        if (-not $_.IsCustom) {
-            if ($privilegedSubscriptionRoles -contains $_.Name) {
-                Add-RoleToDict -RoleObject $_ -RbacRole
-                $privilegedRbacRoles += $_
-            }
+
+    if($AllRoles -eq $true){
+
+        $privilegedRbacRoles = $allRbacRoles
+
+        foreach($r in $privilegedRbacRoles){
+            Add-RoleToDict -Verbose $r -RbacRole
         }
-        # If this RBAC role is custom made
-        else {
-            $customRole = $_
-            $_.Actions | foreach {
-                if ($privilegedRBACPermissions -contains $_) {
-                    Add-RoleToDict -RoleObject $customRole -RbacRole
-                    $privilegedRbacRoles += $customRole
+    }
+    else{
+        $allRbacRoles | foreach {
+            # If this is a built-in RBAC role
+            if (-not $_.IsCustom) {
+                if ($privilegedSubscriptionRoles -contains $_.Name) {
+                    Add-RoleToDict -RoleObject $_ -RbacRole
+                    $privilegedRbacRoles += $_
+                }
+            }
+            # If this RBAC role is custom made
+            else {
+                $customRole = $_
+                $_.Actions | foreach {
+                    if ($privilegedRBACPermissions -contains $_) {
+                        Add-RoleToDict -RoleObject $customRole -RbacRole
+                        $privilegedRbacRoles += $customRole
+                    }
                 }
             }
         }
@@ -592,40 +623,45 @@ function Run-SubscriptionScan {
             elseif ($_.ObjectType -eq "Group") {
                 $newGroupCount = 1
                 $firstGroup = $true
+                $firstGroupName = $_.DisplayName
                 $groupFromGroups = @()
+
                 Do {
                     if ($firstGroup) {
                         try {
-			    $usersFromGroup = Get-AzureADGroupMember -ObjectId $_.ObjectId
-			}
-			catch {
-			    Write-Verbose "Error with a specific group, maybe the Group is a foreign group and can't be queried"
-			}
+                            $groupMembers = Get-AzureADGroupMember -ObjectId $_.ObjectId
+                        }
+                        catch {
+                            Write-Verbose "Error with a specific group, maybe the Group is a foreign group and can't be queried"
+                        }
                     }
                     else {
-                        $usersFromGroup = $groupFromGroups | Get-AzureADGroupMember -ObjectId $_.ObjectId
+                        $groupMembers = $groupFromGroups | Get-AzureADGroupMember -ObjectId $_.ObjectId
                     }
                     $firstGroup = $false
-                    $usersFromGroup = $usersFromGroup | where {$_.ObjectType -eq "User"}
-		    $usersFromGroup | foreach {
-                        $rbacPrivilegedEntities += $_.ObjectId
+                    $usersFromGroup = $groupMembers | where {$_.ObjectType -eq "User"}
+		            $usersFromGroup | foreach {
+                       #Adding Users to PrivilegeAzureEntity Dict to include Group ID
+                        Add-PrivilegeAzureEntity -entityId $_.ObjectId -SubscriptionID $subscriptionId `
+                                    -PrivilegeReason $PrivilegeReason -RoleId $roleId -DirectoryTenantID $TenantId -PrivilegeGroup $firstGroupName -GroupPrivilege
                     }
-                    $groupFromGroups = $usersFromGroup | where {$_.ObjectType -eq "Group"}
-                    $newGroupCount = $groupFromGroups.count
+                    $groupFromGroups = $groupMembers | where {$_.ObjectType -eq "Group"}
+                    $newGroupCount = $groupFromGroups.count #Add groups found in first group
                     $ownersOfGroup = @()
-		    try {
-		        $ownersOfGroup = Get-AzureADGroupOwner -ObjectId $_.ObjectId
-                        $ownersOfGroup | foreach {
-                            if (-not $entityDict.contains($_.ObjectId)){
-                                $AzEntityObject = Get-AzureADUser -ObjectId $_.ObjectId
-                                Add-EntityToDict -AzEntityObject $AzEntityObject
-                            }
-                            Add-PrivilegeAzureEntity -entityId $_.ObjectId -SubscriptionID $subscriptionId -PrivilegeReason "Privileged Group Owner" -RoleId $roleId -DirectoryTenantID $TenantId
-                        }
-		    }
-		    catch {
-		        Write-Verbose "Error with a specific group, maybe the Group is a foreign group and can't be queried"
-		    }
+                    try {
+                        $ownersOfGroup = Get-AzureADGroupOwner -ObjectId $_.ObjectId
+                                $ownersOfGroup | foreach {
+                                    if (-not $entityDict.contains($_.ObjectId)){
+                                        $AzEntityObject = Get-AzureADUser -ObjectId $_.ObjectId
+                                        Add-EntityToDict -AzEntityObject $AzEntityObject
+                                    }
+                                    Add-PrivilegeAzureEntity -entityId $_.ObjectId -SubscriptionID $subscriptionId `
+                                    -PrivilegeReason "Privileged Group Owner" -RoleId $roleId -DirectoryTenantID $TenantId -PrivilegeGroup $firstGroupName -GroupPrivilege
+                                }
+                    }
+                    catch {
+                        Write-Verbose "Error with a specific group, maybe the Group is a foreign group and can't be queried"
+                    }
                 } While ($newGroupCount -ne 0)
             }
         }
@@ -801,7 +837,9 @@ function Scan-AzureAdmins {
     [switch]
     $UseCurrentCred,
     [switch]
-    $GetPrivilegedUserPhotos
+    $GetPrivilegedUserPhotos,
+    [switch]
+    $ScanAllAzureRBACRoles
     )
 
     $CloudShellMode = $false
@@ -900,7 +938,11 @@ function Scan-AzureAdmins {
     $subscriptionList | foreach {
         Write-Host "`n  [+] Scanning Subscription Name: "$_.Name", ID: "$_.Id
         Set-AzContext -SubscriptionId $_.id > $null
-        Run-SubscriptionScan -subscriptionId $_.id
+        if( -not $ScanAllAzureRBACRoles){
+            Run-SubscriptionScan -subscriptionId $_.id
+        }else{
+            Run-SubscriptionScan -subscriptionId $_.id -AllRoles $true
+        }
     }
     
     Write-Host "`n  [+] Working on the results files"
