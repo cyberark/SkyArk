@@ -390,7 +390,9 @@ function Add-EntityToDict {
         [switch]
         $externalUser,
         [switch]
-        $NestedInGroup
+        $NestedInGroup,
+        [string]
+        $CustomResultsFolder = $customOutputDirectory
     )
 
     if ($externalUser){
@@ -405,7 +407,13 @@ function Add-EntityToDict {
     else {
         $EntityId = $AzEntityObject.ObjectId
         if (-not $entityDict.contains($EntityId)) { 
-            $resultsFolder = Join-path -Path $PSScriptRoot -ChildPath ("Results-" + $resultsTime)
+
+            if($CustomResultsFolder){
+                $resultsFolder = $CustomResultsFolder
+            }else{
+                $resultsFolder = Join-path -Path $PSScriptRoot -ChildPath ("Results-" + $resultsTime)
+            }
+           
             $usersPhotoFolder = Join-path -Path $resultsFolder  -ChildPath "PrivilegedUserPhotos"
             $entityHasPhoto = ""
 	        if ((-not $CloudShellMode) -and (-not $fullUserReconList)) {
@@ -470,7 +478,7 @@ function Check-DirectoryRolesEntities {
         Add-RoleToDict -RoleObject $role
         $globalAdminDB = Get-AzureADDirectoryRoleMember -ObjectId $role.ObjectId | Get-AzureADUser
         $globalAdminDB | foreach {
-            Add-EntityToDict -AzEntityObject $_
+            Add-EntityToDict -AzEntityObject $_ 
             Add-PrivilegeAzureEntity -entityId $_.ObjectId -DirectoryTenantID $TenantId -PrivilegeReason $directoryRoleName -RoleId $role.ObjectId
         }
     }
@@ -842,7 +850,9 @@ function Write-AzureStealthResults {
     [CmdletBinding()]
     param(
     [switch]
-    $CloudShellMode
+    $CloudShellMode,
+    [string]
+    $customResultsFolder = $customOutputDirectory
     )
 
     $azureAdminsResults = $privilegedAzEntitiesDict.Values | Sort-Object -Descending EntityType | Sort-Object PrivilegeType, EntityDisplayName, RoleId
@@ -852,8 +862,13 @@ function Write-AzureStealthResults {
     Write-Host "`n  [+] Discovered $numberAdmins Azure Admins! Check them out :)" -ForegroundColor Yellow
 
     if (-not $cloudShellMode) {
-        $resultsFolder = Join-Path -path $PSScriptRoot -childPath ("Results-" + $resultsTime)
-	    $resultsFolderExists = Test-Path -Path $resultsFolder
+        if($customResultsFolder){
+            $resultsFolder = $customResultsFolder
+        }else{
+            $resultsFolder = Join-Path -path $PSScriptRoot -childPath ("Results-" + $resultsTime)
+	        $resultsFolderExists = Test-Path -Path $resultsFolder
+        }
+        
 	if (-not $resultsFolderExists) {
 	    New-Item -ItemType directory -Path $resultsFolder > $null
 	}
@@ -870,7 +885,7 @@ function Write-AzureStealthResults {
     else {
 	    $cloudDriveInfo = Get-CloudDrive
 	    $localCloudShellPath = $cloudDriveInfo.MountPoint
-        $resultsFolder = join-path -path $localCloudShellPath  -childpath ("AzureStealth/Results-" + $resultsTime)
+        $resultsFolder = join-path -path (Join-path -path $localCloudShellPath -childpath "AzureStealth") -childpath ("Results-" + $resultsTime)
         $resultsFolderExists = Test-Path -Path $resultsFolder
         if (-not $resultsFolderExists) {
 	    New-Item -ItemType directory -Path $resultsFolder > $null
@@ -909,7 +924,9 @@ function Scan-AzureAdmins {
     [switch]
     $ScanAllAzureScopes,
     [string]
-    $ScanSubscriptionId
+    $ScanSubscriptionId,
+    [string]
+    $CustomOutputDirectory
     )
 
     $CloudShellMode = $false
