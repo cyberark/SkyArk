@@ -69,7 +69,7 @@ You can load and run the scan directly from GitHub, simply use the following Pow
 ###########################################################################################
 #>
 
-$AzureStealthVersion = "v1.2"
+$AzureStealthVersion = "v1.3"
 
 $AzureStealth = @"
 
@@ -405,8 +405,8 @@ function Add-EntityToDict {
     else {
         $EntityId = $AzEntityObject.ObjectId
         if (-not $entityDict.contains($EntityId)) { 
-            $resultsFolder = $PSScriptRoot + "\Results-" + $resultsTime
-            $usersPhotoFolder = $resultsFolder + "\PrivilegedUserPhotos"
+            $resultsFolder = Join-path -Path $PSScriptRoot -ChildPath ("Results-" + $resultsTime)
+            $usersPhotoFolder = Join-path -Path $resultsFolder  -ChildPath "PrivilegedUserPhotos"
             $entityHasPhoto = ""
 	        if ((-not $CloudShellMode) -and (-not $fullUserReconList)) {
 		        if ($AzEntityObject.ExtensionProperty."thumbnailPhoto@odata.mediaEditLink") {
@@ -752,14 +752,10 @@ function Write-AzureReconInfo {
     [switch]
     $CloudShellMode
     )
-    if ($CloudShellMode) {
-        $usersInfoPath = $resultsFolder + "/AzureUsers-Info.csv"
-        $directoryInfoPath = $resultsFolder + "/AzureDirectory-Info.csv"
-    }
-    else {
-        $usersInfoPath = $resultsFolder + "\AzureUsers-Info.csv"
-        $directoryInfoPath = $resultsFolder + "\AzureDirectory-Info.csv"
-    }
+    
+    $usersInfoPath = join-path -path $resultsFolder  -childPath "AzureUsers-Info.csv"
+    $directoryInfoPath = join-path -path $resultsFolder  -childPath "AzureDirectory-Info.csv"
+
     $ofs = ','
 
     $entityReconOutput = @()
@@ -856,12 +852,12 @@ function Write-AzureStealthResults {
     Write-Host "`n  [+] Discovered $numberAdmins Azure Admins! Check them out :)" -ForegroundColor Yellow
 
     if (-not $cloudShellMode) {
-        $resultsFolder = $PSScriptRoot + "\Results-" + $resultsTime
-	$resultsFolderExists = Test-Path -Path $resultsFolder
+        $resultsFolder = Join-Path -path $PSScriptRoot -childPath ("Results-" + $resultsTime)
+	    $resultsFolderExists = Test-Path -Path $resultsFolder
 	if (-not $resultsFolderExists) {
 	    New-Item -ItemType directory -Path $resultsFolder > $null
 	}
-        $mainResultsPath = $resultsFolder + "\AzureStealth-Results.csv"
+        $mainResultsPath =  Join-Path -path $resultsFolder  -ChildPath "AzureStealth-Results.csv"
         $azureAdminsResults | Export-Csv -path $mainResultsPath -NoTypeInformation
         Write-AzureReconInfo -ResultsFolder $resultsFolder
         Write-Host "`n  [+] Completed the scan, the AzureStealth results should be presented in a new  window"
@@ -872,25 +868,28 @@ function Write-AzureStealthResults {
         $resultsForGridView | Out-GridView -Title "AzureStealth Results"
     }
     else {
-	$cloudDriveInfo = Get-CloudDrive
-	$localCloudShellPath = $cloudDriveInfo.MountPoint
-        $resultsFolder = $localCloudShellPath + "/AzureStealth/Results-" + $resultsTime
+	    $cloudDriveInfo = Get-CloudDrive
+	    $localCloudShellPath = $cloudDriveInfo.MountPoint
+        $resultsFolder = join-path -path $localCloudShellPath  -childpath ("AzureStealth/Results-" + $resultsTime)
         $resultsFolderExists = Test-Path -Path $resultsFolder
         if (-not $resultsFolderExists) {
 	    New-Item -ItemType directory -Path $resultsFolder > $null
 	}
-        $resultCSVpath = $resultsFolder + "/AzureStealthScan-Results.csv"
+        $resultCSVpath = Join-path -path $resultsFolder -childpath "AzureStealthScan-Results.csv"
         $azureAdminsResults | Export-Csv -path $resultCSVpath -NoTypeInformation
-	Write-AzureReconInfo -ResultsFolder $resultsFolder -CloudShellMode
-        $resultsZipPath = $localCloudShellPath + "/AzureStealth/Results-" + $resultsTime +".zip"
+	    Write-AzureReconInfo -ResultsFolder $resultsFolder -CloudShellMode
+        
+        $resultsZipPath = Join-path -path (Join-path -path $localCloudShellPath -childpath "AzureStealth") `
+        -childpath ("Results-" + $resultsTime +".zip")
+
         Compress-Archive -Path $resultsFolder -CompressionLevel Optimal -DestinationPath $resultsZipPath -Update
         Export-File -Path $resultsZipPath
-	$storageName = $cloudDriveInfo.Name
-	$fileShareName = $cloudDriveInfo.FileShareName
+	    $storageName = $cloudDriveInfo.Name
+	    $fileShareName = $cloudDriveInfo.FileShareName
         Write-Host "`n  [+] Completed the scan - the results zip file was created and available at:`n      $resultsZipPath`n"
         Write-Host "`n  [+] You can also use the Azure Portal to view the results files:"
         Write-Host "      Go to => `"The Storage Accounts' main view`" => `"$storageName`" => `"Files view`""
-	Write-Host "      Choose the File Share: `"$fileShareName`""
+	    Write-Host "      Choose the File Share: `"$fileShareName`""
         Write-Host "      In this File Share:"
         Write-Host "      Open the folders => `"AzureStealth`" and `"Results-"$resultsTime"`"`n"
     }
