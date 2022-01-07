@@ -25,6 +25,7 @@ https://github.com/cyberark/SkyArk
 https://github.com/cyberark/SkyArk/tree/master/AzureStealth
 Version 1.1 - 01.09.19 - added two sensitive directory roles
 Version 1.2 - 07.09.20 - add support for CSP suscriptions
+Version 1.3 - 01.07.21 - add support for scanning for all roles and all scopes
 
 ###########################################################################################
 
