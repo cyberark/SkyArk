@@ -25,6 +25,7 @@ https://github.com/cyberark/SkyArk
 https://github.com/cyberark/SkyArk/tree/master/AzureStealth
 Version 1.1 - 01.09.19 - added two sensitive directory roles
 Version 1.2 - 07.09.20 - add support for CSP suscriptions
+Version 1.3 - 01.07.21 - add support for scanning for all roles and all scopes
 
 ###########################################################################################
 
@@ -68,7 +69,7 @@ You can load and run the scan directly from GitHub, simply use the following Pow
 ###########################################################################################
 #>
 
-$AzureStealthVersion = "v1.2"
+$AzureStealthVersion = "v1.3"
 
 $AzureStealth = @"
 
@@ -285,7 +286,12 @@ function Add-PrivilegeAzureEntity {
     [string]
     $scope,
     [switch]
-    $ClassicAdmin
+    $ClassicAdmin,
+    [switch]
+    $GroupPrivilege,
+    [string]
+    $PrivilegeGroup
+
     )
 
     $fullDirectoryAdmins = @("Application Administrator", "Authentication Administrator",`
@@ -318,6 +324,8 @@ function Add-PrivilegeAzureEntity {
         elseif ($PrivilegeReason -eq "Privileged Group Owner") {
             $PrivilegeType = "Azure Subscription Shadow Admin"
             $RBACRoleAdminName = "Privileged Group Owner"
+        }elseif ($SubscriptionID) {
+            $PrivilegeType = "Azure Subscription Role Admin"
         }
     } 
     if ($entityDict[$entityId].ExtensionProperty.createdDateTime) {
@@ -327,6 +335,13 @@ function Add-PrivilegeAzureEntity {
     if ($roleDict[$RoleId].IsCustom) {
         $PrivilegeType = "Azure Subscription Shadow Admin"
         $customRole = $True
+    }
+
+    If($GroupPrivilege){
+
+        $Assignment = $PrivilegeGroup
+    }else{
+        $Assignment = 'DirectAssignment'
     }
 
     $entityLine = [PSCustomObject][ordered] @{
@@ -349,10 +364,13 @@ function Add-PrivilegeAzureEntity {
         UserEnabled          = [string]$entityDict[$entityId].AccountEnabled
         OnPremisesSID        = [string]$entityDict[$entityId].OnPremisesSecurityIdentifier
         RoleIsCustom         = [string]$customRole
-        RoleId               = [string]$RoleId        
+        RoleId               = [string]$RoleId 
+        Assignment           = [string]$Assignment
+        Scope                = [string]$scope        
     }
+  
     if ($RoleId) {
-        $entityRand = [string]($entityDict[$entityId].ObjectId) + "-" + [string]$RoleId
+        $entityRand = [string]($entityDict[$entityId].ObjectId) + "-" + [string]$RoleId +"-" + $subscriptionId
     }
     else {
         $rand  = $SubscriptionID + $PrivilegeReason
@@ -370,7 +388,11 @@ function Add-EntityToDict {
     param(
         $AzEntityObject,
         [switch]
-        $externalUser
+        $externalUser,
+        [switch]
+        $NestedInGroup,
+        [string]
+        $CustomResultsFolder = $customOutputDirectory
     )
 
     if ($externalUser){
@@ -385,8 +407,14 @@ function Add-EntityToDict {
     else {
         $EntityId = $AzEntityObject.ObjectId
         if (-not $entityDict.contains($EntityId)) { 
-            $resultsFolder = $PSScriptRoot + "\Results-" + $resultsTime
-            $usersPhotoFolder = $resultsFolder + "\PrivilegedUserPhotos"
+
+            if($CustomResultsFolder){
+                $resultsFolder = $CustomResultsFolder
+            }else{
+                $resultsFolder = Join-path -Path $PSScriptRoot -ChildPath ("Results-" + $resultsTime)
+            }
+           
+            $usersPhotoFolder = Join-path -Path $resultsFolder  -ChildPath "PrivilegedUserPhotos"
             $entityHasPhoto = ""
 	        if ((-not $CloudShellMode) -and (-not $fullUserReconList)) {
 		        if ($AzEntityObject.ExtensionProperty."thumbnailPhoto@odata.mediaEditLink") {
@@ -450,7 +478,7 @@ function Check-DirectoryRolesEntities {
         Add-RoleToDict -RoleObject $role
         $globalAdminDB = Get-AzureADDirectoryRoleMember -ObjectId $role.ObjectId | Get-AzureADUser
         $globalAdminDB | foreach {
-            Add-EntityToDict -AzEntityObject $_
+            Add-EntityToDict -AzEntityObject $_ 
             Add-PrivilegeAzureEntity -entityId $_.ObjectId -DirectoryTenantID $TenantId -PrivilegeReason $directoryRoleName -RoleId $role.ObjectId
         }
     }
@@ -512,7 +540,12 @@ function Run-SubscriptionScan {
     [CmdletBinding()]
     param(
     [string]
-    $subscriptionId
+    $subscriptionId,
+    [bool]
+    $AllRoles = $false,
+    [bool]
+    $AllScopes = $false
+
     )
 
     if (-not $subscriptionDict.contains($subscriptionId)) {      
@@ -535,21 +568,32 @@ function Run-SubscriptionScan {
 
     $privilegedRbacRoles = @()
     $allRbacRoles = Get-AzRoleDefinition
-    $allRbacRoles | foreach {
-        # If this is a built-in RBAC role
-        if (-not $_.IsCustom) {
-            if ($privilegedSubscriptionRoles -contains $_.Name) {
-                Add-RoleToDict -RoleObject $_ -RbacRole
-                $privilegedRbacRoles += $_
-            }
+
+    if($AllRoles -eq $true){
+
+        $privilegedRbacRoles = $allRbacRoles
+
+        foreach($r in $privilegedRbacRoles){
+            Add-RoleToDict -Verbose $r -RbacRole
         }
-        # If this RBAC role is custom made
-        else {
-            $customRole = $_
-            $_.Actions | foreach {
-                if ($privilegedRBACPermissions -contains $_) {
-                    Add-RoleToDict -RoleObject $customRole -RbacRole
-                    $privilegedRbacRoles += $customRole
+    }
+    else{
+        $allRbacRoles | foreach {
+            # If this is a built-in RBAC role
+            if (-not $_.IsCustom) {
+                if ($privilegedSubscriptionRoles -contains $_.Name) {
+                    Add-RoleToDict -RoleObject $_ -RbacRole
+                    $privilegedRbacRoles += $_
+                }
+            }
+            # If this RBAC role is custom made
+            else {
+                $customRole = $_
+                $_.Actions | foreach {
+                    if ($privilegedRBACPermissions -contains $_) {
+                        Add-RoleToDict -RoleObject $customRole -RbacRole
+                        $privilegedRbacRoles += $customRole
+                    }
                 }
             }
         }
@@ -592,51 +636,118 @@ function Run-SubscriptionScan {
             elseif ($_.ObjectType -eq "Group") {
                 $newGroupCount = 1
                 $firstGroup = $true
+                $firstGroupName = $_.DisplayName
                 $groupFromGroups = @()
+
                 Do {
                     if ($firstGroup) {
                         try {
-			    $usersFromGroup = Get-AzureADGroupMember -ObjectId $_.ObjectId
-			}
-			catch {
-			    Write-Verbose "Error with a specific group, maybe the Group is a foreign group and can't be queried"
-			}
+                            $groupMembers = Get-AzureADGroupMember -ObjectId $_.ObjectId
+                        }
+                        catch {
+                            Write-Verbose "Error with a specific group, maybe the Group is a foreign group and can't be queried"
+                        }
                     }
                     else {
-                        $usersFromGroup = $groupFromGroups | Get-AzureADGroupMember -ObjectId $_.ObjectId
+                        $groupMembers = $groupFromGroups | Get-AzureADGroupMember -ObjectId $_.ObjectId
                     }
                     $firstGroup = $false
-                    $usersFromGroup = $usersFromGroup | where {$_.ObjectType -eq "User"}
-		    $usersFromGroup | foreach {
-                        $rbacPrivilegedEntities += $_.ObjectId
+                    $usersFromGroup = $groupMembers | where {$_.ObjectType -eq "User"}
+		            $usersFromGroup | foreach {
+                       #Adding Users to PrivilegeAzureEntity Dict to include Group ID
+                        Add-PrivilegeAzureEntity -entityId $_.ObjectId -SubscriptionID $subscriptionId `
+                                    -PrivilegeReason $PrivilegeReason -RoleId $roleId -DirectoryTenantID $TenantId `
+                                    -PrivilegeGroup $firstGroupName -GroupPrivilege -scope $scope
                     }
-                    $groupFromGroups = $usersFromGroup | where {$_.ObjectType -eq "Group"}
-                    $newGroupCount = $groupFromGroups.count
+                    $groupFromGroups = $groupMembers | where {$_.ObjectType -eq "Group"}
+                    $newGroupCount = $groupFromGroups.count #Add groups found in first group
                     $ownersOfGroup = @()
-		    try {
-		        $ownersOfGroup = Get-AzureADGroupOwner -ObjectId $_.ObjectId
-                        $ownersOfGroup | foreach {
-                            if (-not $entityDict.contains($_.ObjectId)){
-                                $AzEntityObject = Get-AzureADUser -ObjectId $_.ObjectId
-                                Add-EntityToDict -AzEntityObject $AzEntityObject
-                            }
-                            Add-PrivilegeAzureEntity -entityId $_.ObjectId -SubscriptionID $subscriptionId -PrivilegeReason "Privileged Group Owner" -RoleId $roleId -DirectoryTenantID $TenantId
-                        }
-		    }
-		    catch {
-		        Write-Verbose "Error with a specific group, maybe the Group is a foreign group and can't be queried"
-		    }
+                    try {
+                        $ownersOfGroup = Get-AzureADGroupOwner -ObjectId $_.ObjectId
+                                $ownersOfGroup | foreach {
+                                    if (-not $entityDict.contains($_.ObjectId)){
+                                        $AzEntityObject = Get-AzureADUser -ObjectId $_.ObjectId
+                                        Add-EntityToDict -AzEntityObject $AzEntityObject
+                                    }
+                                    Add-PrivilegeAzureEntity -entityId $_.ObjectId -SubscriptionID $subscriptionId `
+                                    -PrivilegeReason "Privileged Group Owner" -RoleId $roleId -DirectoryTenantID $TenantId `
+                                    -PrivilegeGroup $firstGroupName -GroupPrivilege -scope $scope
+                                }
+                    }
+                    catch {
+                        Write-Verbose "Error with a specific group, maybe the Group is a foreign group and can't be queried"
+                    }
                 } While ($newGroupCount -ne 0)
             }
         }
-    
+
         $rbacPrivilegedEntities | foreach {
             if (-not $entityDict.contains($_)){
                 $AzEntityObject = Get-AzureADUser -ObjectId $_
                 Add-EntityToDict -AzEntityObject $AzEntityObject
             }
-            Add-PrivilegeAzureEntity -entityId $_ -SubscriptionID $subscriptionId -PrivilegeReason $PrivilegeReason -RoleId $roleId -DirectoryTenantID $TenantId
+            Add-PrivilegeAzureEntity -entityId $_ -SubscriptionID $subscriptionId `
+            -PrivilegeReason $PrivilegeReason -RoleId $roleId -DirectoryTenantID $TenantId -scope $scope
         }
+
+        if($AllScopes -and ([string]$_.scope -ne $scope)){
+
+            $aScope = $_.scope
+
+            if ($_.ObjectType -eq "User") {
+                Add-PrivilegeAzureEntity -entityId $_.ObjectId -SubscriptionID $subscriptionId `
+                -PrivilegeReason $_.RoleDefinitionName -RoleId $roleId -DirectoryTenantID $TenantId -scope $aScope
+            }
+            elseif ($_.ObjectType -eq "Group") {
+                $newGroupCount = 1
+                $firstGroup = $true
+                $firstGroupName = $_.DisplayName
+                $groupFromGroups = @()
+
+                Do {
+                    if ($firstGroup) {
+                        try {
+                            $groupMembers = Get-AzureADGroupMember -ObjectId $_.ObjectId
+                        }
+                        catch {
+                            Write-Verbose "Error with a specific group, maybe the Group is a foreign group and can't be queried"
+                        }
+                    }
+                    else {
+                        $groupMembers = $groupFromGroups | Get-AzureADGroupMember -ObjectId $_.ObjectId
+                    }
+                    $firstGroup = $false
+                    $usersFromGroup = $groupMembers | where {$_.ObjectType -eq "User"}
+		            $usersFromGroup | foreach {
+                       #Adding Users to PrivilegeAzureEntity Dict to include Group ID
+                        Add-PrivilegeAzureEntity -entityId $_.ObjectId -SubscriptionID $subscriptionId `
+                                    -PrivilegeReason $PrivilegeReason -RoleId $roleId -DirectoryTenantID $TenantId `
+                                    -PrivilegeGroup $firstGroupName -GroupPrivilege -scope $aScope
+                    }
+                    $groupFromGroups = $groupMembers | where {$_.ObjectType -eq "Group"}
+                    $newGroupCount = $groupFromGroups.count #Add groups found in first group
+                    $ownersOfGroup = @()
+                    try {
+                        $ownersOfGroup = Get-AzureADGroupOwner -ObjectId $_.ObjectId
+                                $ownersOfGroup | foreach {
+                                    if (-not $entityDict.contains($_.ObjectId)){
+                                        $AzEntityObject = Get-AzureADUser -ObjectId $_.ObjectId
+                                        Add-EntityToDict -AzEntityObject $AzEntityObject
+                                    }
+                                    Add-PrivilegeAzureEntity -entityId $_.ObjectId -SubscriptionID $subscriptionId `
+                                    -PrivilegeReason "Privileged Group Owner" -RoleId $roleId -DirectoryTenantID $TenantId `
+                                    -PrivilegeGroup $firstGroupName -GroupPrivilege -scope $aScope
+                                }
+                    }
+                    catch {
+                        Write-Verbose "Error with a specific group, maybe the Group is a foreign group and can't be queried"
+                    }
+                } While ($newGroupCount -ne 0)
+            }
+
+        }
+    
+        
     }
 }
 
@@ -649,14 +760,10 @@ function Write-AzureReconInfo {
     [switch]
     $CloudShellMode
     )
-    if ($CloudShellMode) {
-        $usersInfoPath = $resultsFolder + "/AzureUsers-Info.csv"
-        $directoryInfoPath = $resultsFolder + "/AzureDirectory-Info.csv"
-    }
-    else {
-        $usersInfoPath = $resultsFolder + "\AzureUsers-Info.csv"
-        $directoryInfoPath = $resultsFolder + "\AzureDirectory-Info.csv"
-    }
+    
+    $usersInfoPath = join-path -path $resultsFolder  -childPath "AzureUsers-Info.csv"
+    $directoryInfoPath = join-path -path $resultsFolder  -childPath "AzureDirectory-Info.csv"
+
     $ofs = ','
 
     $entityReconOutput = @()
@@ -743,7 +850,9 @@ function Write-AzureStealthResults {
     [CmdletBinding()]
     param(
     [switch]
-    $CloudShellMode
+    $CloudShellMode,
+    [string]
+    $customResultsFolder = $customOutputDirectory
     )
 
     $azureAdminsResults = $privilegedAzEntitiesDict.Values | Sort-Object -Descending EntityType | Sort-Object PrivilegeType, EntityDisplayName, RoleId
@@ -753,12 +862,17 @@ function Write-AzureStealthResults {
     Write-Host "`n  [+] Discovered $numberAdmins Azure Admins! Check them out :)" -ForegroundColor Yellow
 
     if (-not $cloudShellMode) {
-        $resultsFolder = $PSScriptRoot + "\Results-" + $resultsTime
-	$resultsFolderExists = Test-Path -Path $resultsFolder
+        if($customResultsFolder){
+            $resultsFolder = $customResultsFolder
+        }else{
+            $resultsFolder = Join-Path -path $PSScriptRoot -childPath ("Results-" + $resultsTime)
+	        $resultsFolderExists = Test-Path -Path $resultsFolder
+        }
+        
 	if (-not $resultsFolderExists) {
 	    New-Item -ItemType directory -Path $resultsFolder > $null
 	}
-        $mainResultsPath = $resultsFolder + "\AzureStealth-Results.csv"
+        $mainResultsPath =  Join-Path -path $resultsFolder  -ChildPath "AzureStealth-Results.csv"
         $azureAdminsResults | Export-Csv -path $mainResultsPath -NoTypeInformation
         Write-AzureReconInfo -ResultsFolder $resultsFolder
         Write-Host "`n  [+] Completed the scan, the AzureStealth results should be presented in a new  window"
@@ -769,25 +883,28 @@ function Write-AzureStealthResults {
         $resultsForGridView | Out-GridView -Title "AzureStealth Results"
     }
     else {
-	$cloudDriveInfo = Get-CloudDrive
-	$localCloudShellPath = $cloudDriveInfo.MountPoint
-        $resultsFolder = $localCloudShellPath + "/AzureStealth/Results-" + $resultsTime
+	    $cloudDriveInfo = Get-CloudDrive
+	    $localCloudShellPath = $cloudDriveInfo.MountPoint
+        $resultsFolder = join-path -path (Join-path -path $localCloudShellPath -childpath "AzureStealth") -childpath ("Results-" + $resultsTime)
         $resultsFolderExists = Test-Path -Path $resultsFolder
         if (-not $resultsFolderExists) {
 	    New-Item -ItemType directory -Path $resultsFolder > $null
 	}
-        $resultCSVpath = $resultsFolder + "/AzureStealthScan-Results.csv"
+        $resultCSVpath = Join-path -path $resultsFolder -childpath "AzureStealthScan-Results.csv"
         $azureAdminsResults | Export-Csv -path $resultCSVpath -NoTypeInformation
-	Write-AzureReconInfo -ResultsFolder $resultsFolder -CloudShellMode
-        $resultsZipPath = $localCloudShellPath + "/AzureStealth/Results-" + $resultsTime +".zip"
+	    Write-AzureReconInfo -ResultsFolder $resultsFolder -CloudShellMode
+        
+        $resultsZipPath = Join-path -path (Join-path -path $localCloudShellPath -childpath "AzureStealth") `
+        -childpath ("Results-" + $resultsTime +".zip")
+
         Compress-Archive -Path $resultsFolder -CompressionLevel Optimal -DestinationPath $resultsZipPath -Update
         Export-File -Path $resultsZipPath
-	$storageName = $cloudDriveInfo.Name
-	$fileShareName = $cloudDriveInfo.FileShareName
+	    $storageName = $cloudDriveInfo.Name
+	    $fileShareName = $cloudDriveInfo.FileShareName
         Write-Host "`n  [+] Completed the scan - the results zip file was created and available at:`n      $resultsZipPath`n"
         Write-Host "`n  [+] You can also use the Azure Portal to view the results files:"
         Write-Host "      Go to => `"The Storage Accounts' main view`" => `"$storageName`" => `"Files view`""
-	Write-Host "      Choose the File Share: `"$fileShareName`""
+	    Write-Host "      Choose the File Share: `"$fileShareName`""
         Write-Host "      In this File Share:"
         Write-Host "      Open the folders => `"AzureStealth`" and `"Results-"$resultsTime"`"`n"
     }
@@ -801,7 +918,15 @@ function Scan-AzureAdmins {
     [switch]
     $UseCurrentCred,
     [switch]
-    $GetPrivilegedUserPhotos
+    $GetPrivilegedUserPhotos,
+    [switch]
+    $ScanAllAzureRBACRoles,
+    [switch]
+    $ScanAllAzureScopes,
+    [string]
+    $ScanSubscriptionId,
+    [string]
+    $CustomOutputDirectory
     )
 
     $CloudShellMode = $false
@@ -869,7 +994,15 @@ function Scan-AzureAdmins {
         $tenantList = Get-AzTenant
         Write-Host "`nAvailable Tenant ID/s:`n"
         Write-Host "  "($tenantList.Id | Format-Table | Out-String)
-        $subscriptionList = Get-AzSubscription | select Name, Id, TenantId
+        
+        if($ScanSubscriptionId){
+
+            $subscriptionList = Get-AzSubscription -subscriptionId $ScanSubscriptionId
+
+        }else{
+            $subscriptionList = Get-AzSubscription | select Name, Id, TenantId 
+        }
+
         if ($subscriptionList) {
             Write-Host "Available Subscription\s:"
             Write-Host ($subscriptionList | Format-Table | Out-String) -NoNewline
@@ -898,9 +1031,21 @@ function Scan-AzureAdmins {
 
     # Scan all the available subscription\s
     $subscriptionList | foreach {
-        Write-Host "`n  [+] Scanning Subscription Name: "$_.Name", ID: "$_.Id
+        Write-Host "`n  [+] Scanning Subscription Name: "$($_.Name)", ID: $($_.Id)"
         Set-AzContext -SubscriptionId $_.id > $null
-        Run-SubscriptionScan -subscriptionId $_.id
+        $paramSplat =@{}
+
+        $paramSplat.add('subscriptionId',$_.id)
+
+        if($ScanAllAzureRBACRoles){
+            $paramSplat.add('AllRoles',$true)
+        }
+    
+        if($ScanAllAzureScopes){
+            $paramSplat.add('AllScopes',$true)
+        }
+        
+        Run-SubscriptionScan @paramSplat
     }
     
     Write-Host "`n  [+] Working on the results files"
