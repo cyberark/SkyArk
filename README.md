@@ -61,7 +61,7 @@ In short:
  ![Demo](https://github.com/Hechtov/Photos/blob/master/SkyArk/AzureStealth%20-%20short%20demo1.gif?raw=true)  
    
   ### 2. AWStealth Scan
-**Discover the most privileged entities in the scanned AWS environment - including the Azure Shadow Admins.**
+**Discover the most privileged entities in the scanned AWS environment - including the AWS Shadow Admins.**
   
 **How To Run AWStealth**  
 The full details are in the AWStealth's Readme file:  
