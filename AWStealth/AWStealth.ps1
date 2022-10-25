@@ -467,7 +467,7 @@ function Check-PrivilegedPolicy {
                         # Passing a role to a new Lambda function, and invoke it
                         if ($_.Action | ? {($_ -eq "lambda:CreateFunction")}){
                             if ($_.Resource | ? {($_ -eq "*") -or ($_ -eq "arn:aws:lambda:*:*:function:*")}) {
-                                if ($_.Action | ? {($_ -eq "iam:ambda:InvokeFunction") -or ($_ -eq "lambda:AddPermission") -or ($_ -eq "lambda:CreateEventSourceMapping")}) {
+                                if ($_.Action | ? {($_ -eq "lambda:InvokeFunction") -or ($_ -eq "lambda:AddPermission") -or ($_ -eq "lambda:CreateEventSourceMapping")}) {
                                     $isPrivileged, $privilegeType = Mark-privilegedPolicy -privilegeType $privilegeType -newPrivilegeType "ShadowRunLambda"
                                 }
                             }
