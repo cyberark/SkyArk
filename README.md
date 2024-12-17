@@ -12,8 +12,6 @@ SkyArk currently focuses on mitigating the new threat of Cloud Shadow Admins, an
 Stealthy and undercover cloud admins may reside in every public cloud platform and SkyArk helps mitigating the risk in AWS and Azure.  
 **In defensive/pentest/risk assessment procedures - make sure to address the threat and validate that those privileged entities are indeed well secured.**  
   
-***Note:** In addition to SkyArk, you can try CyberArk Cloud Entitlements Manager for free, it offers discovery and remediation of all excessive permissions – not only those for admins and shadow admins – across AWS, Azure, and GCP. You can test these capabilities at [cyberark.com/cem](https://www.cyberark.com/cem).*  
-  
 # Background:
 SkyArk deals with the new uprising threat of Cloud Shadow Admins - how attackers can find and abuse non-trivial and so-called “limited” permissions to still make it through and escalate their privileges and become full cloud admins.  
 Furthermore, attackers can easily use those tricky specific permissions to hide stealthy admin entities that will wait for them as an undercover persistence technique.  
